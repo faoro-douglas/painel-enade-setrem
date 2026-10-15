@@ -1,0 +1,675 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel ENADE 2026</title>
+<meta name="description" content="Painel ENADE da Faculdade Três de Maio (SETREM): prazos, conteúdo das provas, editais e responsabilidades. Pedagogia e Eng. de Computação (2026); Agronomia e Enfermagem (2027).">
+<style>
+  :root{
+    --bg:#eef1f5; --surface:#ffffff; --surface2:#f4f7fa; --line:#d8e0ea;
+    --ink:#17222e; --muted:#5b6b7e;
+    --navy:#12263a; --teal:#0e7c7c; --amber:#b56f27; --gold:#c9972f;
+    --green:#2f7d4f; --wine:#a23b4e; --violet:#5a4a9e;
+    --accent:var(--navy);
+    --st-past:#8794a4; --st-past-bg:#eceff3;
+    --st-now:#0e7c7c; --st-now-bg:#e2f1f1;
+    --st-soon:#b56f27; --st-soon-bg:#f8eedf;
+    --st-urgent:#b23b2e; --st-urgent-bg:#f8e5e2;
+    --shadow:0 1px 3px rgba(20,40,70,.08),0 6px 18px rgba(20,40,70,.06);
+    --font-d:"Spectral",Georgia,"Times New Roman",serif;
+    --font-b:"Source Sans 3",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0e1620; --surface:#16222f; --surface2:#1b2a39; --line:#2a3b4d;
+    --ink:#e7eef5; --muted:#9fb0c2;
+    --navy:#8fb3d6; --teal:#56c3c3; --amber:#e0a763; --gold:#e6c067;
+    --green:#6cc08b; --wine:#e08a9b; --violet:#a99be0;
+    --st-past:#7e8da0; --st-past-bg:#20303f;
+    --st-now:#56c3c3; --st-now-bg:#143033;
+    --st-soon:#e0a763; --st-soon-bg:#33291a;
+    --st-urgent:#f0897c; --st-urgent-bg:#3a201d;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0e1620; --surface:#16222f; --surface2:#1b2a39; --line:#2a3b4d;
+    --ink:#e7eef5; --muted:#9fb0c2;
+    --navy:#8fb3d6; --teal:#56c3c3; --amber:#e0a763; --gold:#e6c067;
+    --green:#6cc08b; --wine:#e08a9b; --violet:#a99be0;
+    --st-past:#7e8da0; --st-past-bg:#20303f;
+    --st-now:#56c3c3; --st-now-bg:#143033;
+    --st-soon:#e0a763; --st-soon-bg:#33291a;
+    --st-urgent:#f0897c; --st-urgent-bg:#3a201d;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  img{max-width:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);line-height:1.5;
+    font-size:15px;-webkit-text-size-adjust:100%}
+  .wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:0}
+  h1,h2,h3{font-family:var(--font-d);font-weight:600;text-wrap:balance;margin:0}
+  a{color:var(--teal)}
+  .tnum{font-variant-numeric:tabular-nums}
+
+  header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:#12263a;
+    color:#fff;box-shadow:var(--shadow)}
+  header.top .wrap{display:flex;align-items:center;gap:12px;padding-block:12px;flex-wrap:wrap}
+  header.top h1{color:#fff;font-size:21px;letter-spacing:.2px;line-height:1.15;display:flex;align-items:center;gap:8px}
+  header.top .sub{color:#c6d4e2;font-size:12.5px;margin-top:2px}
+  header.top .spacer{flex:1 1 auto;min-width:8px}
+  .pi-badge{display:none;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    background:var(--violet);color:#fff;border-radius:6px;padding:2px 7px;vertical-align:middle}
+  body.pi .pi-badge{display:inline-block}
+  .updated{font-size:11.5px;color:#aebfd0;white-space:nowrap}
+  .tbtn{appearance:none;border:1px solid #3a5674;background:#1b3a57;color:#dfe8f1;border-radius:8px;
+    padding:6px 10px;font-size:12.5px;cursor:pointer;font-family:var(--font-b)}
+  .tbtn:hover{background:#244b6f}
+
+  .courses{display:flex;gap:10px;flex-wrap:wrap;margin-block:16px}
+  .course{position:relative;flex:1 1 220px;min-width:0;display:flex;gap:12px;align-items:center;text-align:left;
+    background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;
+    cursor:pointer;box-shadow:var(--shadow);font-family:var(--font-b);color:var(--ink);transition:border-color .15s}
+  .course:hover{border-color:var(--muted)}
+  .course[aria-selected="true"].c-ped{border-color:var(--amber);background:var(--st-soon-bg)}
+  .course[aria-selected="true"].c-comp{border-color:var(--teal);background:var(--st-now-bg)}
+  .course[aria-selected="true"].c-agro{border-color:var(--green)}
+  .course[aria-selected="true"].c-enf{border-color:var(--wine)}
+  .course .dot{width:42px;height:42px;border-radius:10px;flex:0 0 auto;display:grid;place-items:center;
+    color:#fff;font-family:var(--font-d);font-size:20px;font-weight:600}
+  .c-ped .dot{background:var(--amber)} .c-comp .dot{background:var(--teal)}
+  .c-agro .dot{background:var(--green)} .c-enf .dot{background:var(--wine)}
+  .course .nm{font-family:var(--font-d);font-size:16.5px;font-weight:600}
+  .course .gr{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .course .pv{font-size:12px;color:var(--ink);margin-top:3px}
+  .course .yr{position:absolute;top:8px;right:10px;font-size:10px;font-weight:700;letter-spacing:.5px;
+    color:var(--muted);background:var(--surface2);border:1px solid var(--line);border-radius:999px;padding:1px 7px}
+  .course.wait .dot{opacity:.72}
+  .course.wait .nm{color:var(--muted)}
+
+  nav.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:4px;
+    border-bottom:1px solid var(--line);scrollbar-width:thin}
+  nav.tabs button{appearance:none;border:0;background:transparent;color:var(--muted);
+    font-family:var(--font-b);font-size:14px;font-weight:600;padding:9px 12px;cursor:pointer;
+    white-space:nowrap;border-bottom:2.5px solid transparent;margin-bottom:-1px}
+  nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+  nav.tabs button.pi-tab[aria-selected="true"]{border-bottom-color:var(--violet)}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.pi-tab{color:var(--violet)}
+
+  main{padding-bottom:40px}
+  section[hidden]{display:none!important}
+  .panel-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:16px 0 10px}
+  .panel-head h2{font-size:19px}
+  .panel-head .cx{font-size:12.5px;color:var(--muted)}
+  .role-hint{font-size:12.5px;color:var(--muted);background:var(--surface2);border:1px solid var(--line);
+    border-left:3px solid var(--violet);border-radius:8px;padding:8px 11px;margin:0 0 10px}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  .list{display:flex;flex-direction:column;gap:9px}
+
+  .pz{display:grid;grid-template-columns:120px 1fr auto;gap:12px;align-items:start;padding:12px 14px}
+  .pz .date{font-family:var(--font-d);font-weight:600;font-size:15px;color:var(--ink)}
+  .pz .who{font-size:12px;color:var(--muted);margin-top:2px}
+  .pz .ti{font-weight:600;min-width:0}
+  .pz .de{font-size:13px;color:var(--muted);margin-top:2px}
+  .chip{justify-self:end;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .s-past{color:var(--st-past);background:var(--st-past-bg)}
+  .s-now{color:var(--st-now);background:var(--st-now-bg)}
+  .s-soon{color:var(--st-soon);background:var(--st-soon-bg)}
+  .s-urgent{color:var(--st-urgent);background:var(--st-urgent-bg)}
+  @media (max-width:560px){
+    .pz{grid-template-columns:1fr auto;grid-template-areas:"date chip" "body body"}
+    .pz .date{grid-area:date}.pz .chip{grid-area:chip}.pz .bd{grid-area:body}
+  }
+
+  .block{padding:14px 16px}
+  .block h3{font-size:16px;margin-bottom:2px}
+  .block .meta{font-size:12.5px;color:var(--teal);font-weight:600;margin-bottom:6px}
+  .block p{margin:6px 0;color:var(--ink)}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .tag{font-size:11.5px;background:var(--surface2);border:1px solid var(--line);border-radius:7px;
+    padding:3px 8px;color:var(--muted)}
+  ul.ck{list-style:none;margin:0;padding:0}
+  ul.ck li{display:flex;gap:10px;padding:10px 14px}
+  ul.ck li + li{border-top:1px solid var(--line)}
+  ul.ck .mk{flex:0 0 auto;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;
+    background:var(--surface2);border:1px solid var(--line);color:var(--teal);font-weight:800;font-size:12px;margin-top:1px}
+  ul.ck.pi .mk{color:var(--violet)}
+  ul.ck .tx{min-width:0}
+  ul.ck .tx b{font-weight:700}
+  ul.ck .tx small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+
+  .novi{padding:12px 14px}
+  .novi .d{font-family:var(--font-d);font-weight:600;color:var(--accent);font-size:13.5px}
+  .novi .t{font-weight:600;margin-top:2px}
+  .novi .x{font-size:13px;color:var(--muted);margin-top:2px}
+
+  .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px}
+  .lk{display:block;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;text-decoration:none}
+  .lk .lt{font-weight:700;color:var(--ink)}
+  .lk .lu{font-size:12px;color:var(--teal);word-break:break-all;margin-top:2px}
+
+  .note{font-size:12px;color:var(--muted);margin:14px 2px 0;line-height:1.5}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 0;font-size:11.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  footer{color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:22px;padding:16px 0 30px}
+  .pi-access{appearance:none;border:0;background:transparent;color:var(--muted);font-size:11.5px;
+    cursor:pointer;text-decoration:underline;font-family:var(--font-b);padding:0;margin-top:8px}
+  .pi-form{display:none;margin-top:10px;gap:8px;align-items:center;flex-wrap:wrap}
+  .pi-form input{border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;
+    background:var(--surface);color:var(--ink);font-family:var(--font-b);max-width:220px}
+  .pi-form button{border:1px solid var(--violet);background:var(--violet);color:#fff;border-radius:8px;
+    padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-b)}
+  .pi-msg{font-size:12px;color:var(--st-urgent)}
+
+  .wait-box{padding:26px 20px;text-align:center}
+  .wait-box .ic{font-size:30px}
+  .wait-box h3{font-size:17px;margin:8px 0 6px}
+  .wait-box p{color:var(--muted);font-size:13.5px;max-width:520px;margin:0 auto}
+
+  /* calendário dinâmico */
+  .cal-today{font-family:var(--font-d);font-size:17px;font-weight:600;margin:14px 0 2px}
+  .cal-filter{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 2px}
+  .cal-filter button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--font-b)}
+  .cal-filter button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .cal-filter button.f-pi[aria-pressed="true"]{background:var(--violet);border-color:var(--violet)}
+  .cal-group{margin:18px 0 8px;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+  .cal{display:flex;flex-direction:column;gap:9px}
+  .cal-item{display:grid;grid-template-columns:6px 1fr;background:var(--surface);border:1px solid var(--line);
+    border-radius:11px;overflow:hidden;box-shadow:var(--shadow)}
+  .cal-bar{background:var(--muted)}
+  .cal-item.now .cal-bar{background:var(--st-now)}
+  .cal-item.soon .cal-bar{background:var(--st-urgent)}
+  .cal-item.next .cal-bar{background:var(--st-soon)}
+  .cal-item.past .cal-bar{background:var(--st-past)}
+  .cal-bd{padding:11px 14px;min-width:0}
+  .cal-top{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .cal-date{font-family:var(--font-d);font-weight:600;font-size:14px}
+  .cal-when{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:999px}
+  .cal-ti{font-weight:600;margin-top:3px}
+  .cal-de{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .auds{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+  .aud{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:6px;border:1px solid transparent}
+  .aud-Procuradoria{color:var(--violet);background:rgba(90,74,158,.12)}
+  .aud-Coordenador{color:var(--teal);background:var(--st-now-bg)}
+  .aud-Estudante{color:var(--amber);background:var(--st-soon-bg)}
+  .aud-INEP,.aud-Geral{color:var(--muted);background:var(--surface2);border-color:var(--line)}
+  .cal-item.past{opacity:.62}
+  details.cal-past{margin-top:8px}
+  details.cal-past summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;padding:8px 2px;list-style:none}
+  details.cal-past summary::-webkit-details-marker{display:none}
+  details.cal-past summary:before{content:"▸ ";}
+  details.cal-past[open] summary:before{content:"▾ ";}
+  .cal-empty{color:var(--muted);font-size:13.5px;padding:6px 2px}
+
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;
+    padding-top:calc(16px + env(safe-area-inset-top,0px))}
+  .modal-bg{position:absolute;inset:0;background:rgba(8,16,26,.55)}
+  .modal-box{position:relative;background:var(--surface);color:var(--ink);border:1px solid var(--line);
+    border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.4);max-width:660px;width:100%;max-height:86vh;
+    overflow:auto;padding:24px 22px 28px}
+  .modal-x{position:absolute;top:8px;right:12px;appearance:none;border:0;background:transparent;
+    color:var(--muted);font-size:28px;line-height:1;cursor:pointer;padding:4px 8px}
+  .modal-x:hover{color:var(--ink)}
+  .mh{font-size:19px;margin-bottom:4px;padding-right:28px}
+  .mq{font-size:12.5px;color:var(--teal);font-weight:700;margin-bottom:6px}
+  .modal-box h4{font-family:var(--font-d);font-size:14px;margin:18px 0 6px;color:var(--accent)}
+  .mp{margin:6px 0;color:var(--ink)}
+  .ml{margin:0;padding-left:18px}
+  .ml li{margin:5px 0}
+  .mc{margin:8px 0 10px;padding:11px 13px;background:var(--surface2);border:1px solid var(--line);border-radius:10px}
+  .mc-s{font-weight:600;color:var(--ink);font-family:var(--font-d);font-size:14.5px}
+  .mc-h{margin-top:7px;padding-left:18px}
+  .mc-h li{margin:4px 0;font-size:13.5px;color:var(--muted)}
+  .mo{margin:0;padding-left:22px;columns:2;column-gap:26px}
+  .mo li{margin:3px 0;break-inside:avoid}
+  @media (max-width:520px){.mo{columns:1}}
+  .mlink{display:inline-block;margin-top:18px;font-weight:700}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div>
+      <h1>Painel ENADE 2026 <span class="pi-badge">Procuradoria</span></h1>
+      <div class="sub">Faculdade Três de Maio — SETREM · Pedagogia e Eng. de Computação (2026) · Agronomia e Enfermagem (2027)</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="updated tnum">Conteúdo revisado em <b id="upd">02/10/2026</b></div>
+    <button class="tbtn" id="theme" type="button">Tema</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="courses" role="tablist" aria-label="Curso">
+    <button class="course c-ped" id="btn-ped" role="tab" aria-selected="true" onclick="pick('ped')">
+      <span class="dot">P</span><span class="yr">2026 · anual</span>
+      <span><span class="nm">Pedagogia</span><br><span class="gr">Licenciatura</span>
+      <span class="pv" id="pv-ped"></span></span>
+    </button>
+    <button class="course c-comp" id="btn-comp" role="tab" aria-selected="false" onclick="pick('comp')">
+      <span class="dot">C</span><span class="yr">2026</span>
+      <span><span class="nm">Eng. de Computação</span><br><span class="gr">Bacharelado</span>
+      <span class="pv" id="pv-comp"></span></span>
+    </button>
+    <button class="course c-agro wait" id="btn-agro" role="tab" aria-selected="false" onclick="pick('agro')">
+      <span class="dot">A</span><span class="yr">2027</span>
+      <span><span class="nm">Agronomia</span><br><span class="gr">Bacharelado</span>
+      <span class="pv" id="pv-agro"></span></span>
+    </button>
+    <button class="course c-enf wait" id="btn-enf" role="tab" aria-selected="false" onclick="pick('enf')">
+      <span class="dot">E</span><span class="yr">2027</span>
+      <span><span class="nm">Enfermagem</span><br><span class="gr">Bacharelado</span>
+      <span class="pv" id="pv-enf"></span></span>
+    </button>
+  </div>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Seção"></nav>
+
+  <main id="main"></main>
+
+  <footer>
+    Fonte: páginas oficiais de legislação do INEP (ENADE e PND) e Diário Oficial da União (DOU).
+    Confira sempre o ato oficial antes de agir. Painel mantido pela Procuradoria Institucional da SETREM.
+    <br>
+    <button class="pi-access" id="pi-access" type="button">Acesso da Procuradoria Institucional</button>
+    <div class="pi-form" id="pi-form">
+      <input type="password" id="pi-code" placeholder="código de acesso" autocomplete="off">
+      <button type="button" id="pi-enter">Entrar</button>
+      <span class="pi-msg" id="pi-msg" hidden>Código incorreto.</span>
+    </div>
+  </footer>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-bg" onclick="closePort()"></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-label="Detalhe">
+    <button class="modal-x" type="button" onclick="closePort()" aria-label="Fechar">&times;</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- estado ---------- */
+var TODAY=new Date(); TODAY.setHours(0,0,0,0);           /* data real (dinâmico) */
+var curCourse='ped', curTab='cal', calFilter='todos';
+var PI_CODE='pi-setrem';                                  /* destrava a aba/filtro Procuradoria */
+var isPI=false; try{isPI=localStorage.getItem('painel-enade-pi')==='1';}catch(e){}
+
+var MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+var DIA=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+function mk(y,m,d){return new Date(y,m-1,d);}
+function fmtLongToday(){var s=DIA[TODAY.getDay()]+', '+TODAY.getDate()+' de '+MES[TODAY.getMonth()]+' de '+TODAY.getFullYear();return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function statusFrom(start,end){
+  var t=TODAY;
+  if(end && t>end) return ['s-past','Encerrado'];
+  if(start && t<start){var days=Math.ceil((start-t)/864e5);return days<=10?['s-urgent','Em breve']:['s-soon','A vir'];}
+  if(start && end && t>=start && t<=end){var dleft=Math.ceil((end-t)/864e5);return dleft<=10?['s-urgent','Encerra já']:['s-now','Aberto'];}
+  if(end){var dl=Math.ceil((end-t)/864e5);return dl<=10?['s-urgent','Em breve']:['s-soon','A vir'];}
+  return ['s-soon','—'];
+}
+
+/* ---------- dados ----------
+   Papéis, na ordem do processo: Procuradoria (começa antes) -> Coordenador -> Estudante.
+   A aba/filtro "Procuradoria" fica oculta até destravar com o código (rodapé); os coordenadores não a veem. */
+var DATA = {
+ ped:{
+  nome:'Pedagogia', grau:'Licenciatura', ano:'2026 (avaliada todo ano)', wait:false,
+  prova:'Prova teórica (PND): 20/09/2026 — já realizada',
+  prazos:[
+   {d:'20/09/2026',s:null,e:mk(2026,9,20),t:'Prova — Avaliação Teórica (PND)',w:'Estudante',de:'Aplicada em 20/09; mesma prova da PND (13h30–19h).'},
+   {d:'24–25/09/2026',s:null,e:mk(2026,9,25),t:'Recurso dos gabaritos objetivos',w:'Estudante',de:'Versões preliminares dos gabaritos das questões objetivas.'},
+   {d:'05–06/10/2026',s:mk(2026,10,5),e:mk(2026,10,6),t:'Recurso da expectativa de resposta da discursiva',w:'Estudante',de:'Todas as áreas (inclui Pedagogia). Prazo criado na retificação de 01/10.'},
+   {d:'AP — 2º período',s:mk(2026,8,10),e:mk(2026,11,16),t:'Inscrição na AP e Questionário de AP',w:'Coordenador / Estudante',de:'Inscrição/cadastro de orientadores e supervisores até 06/11; Questionário de AP do estudante até 16/11; capacitações/instrumentos até 27/11; questionário do orientador até 07/12.'},
+   {d:'até 25/10/2026',s:mk(2026,9,18),e:mk(2026,10,25),t:'Retificação das inscrições de ingressantes',w:'Coordenador',de:'Prazo prorrogado na retificação de 01/10 (era 30/09).'},
+   {d:'26/10 a 18/12/2026',s:mk(2026,10,26),e:mk(2026,12,18),t:'Questionário do Ingressante',w:'Estudante (ingressante)',de:'Início mudou de 01/10 para 26/10 (retificação de 01/10).'},
+   {d:'15/12/2026',s:mk(2026,12,15),e:mk(2026,12,15),t:'Resultado individual (PND)',w:'INEP',de:'Divulgação do resultado individual / Boletim de Desempenho.'},
+   {d:'20/11/2026 a 15/01/2027',s:mk(2026,11,20),e:mk(2027,1,15),t:'Dispensa de participação na prova',w:'Estudante / Coordenador',de:'Para quem não compareceu; concluinte doente também pode requerer reaplicação (novidade da retificação de 01/10).'}
+  ],
+  conteudo:[
+   {h:'Formação Geral Docente',m:'Portaria nº 315, de 26/05/2025',p:'Conteúdos transversais pedagógicos comuns a todas as licenciaturas.',tags:['30 questões de múltipla escolha','1 questão discursiva (argumentativa)'],port:'p315'},
+   {h:'Componente Específico — Pedagogia',m:'Matriz de Referência — Portaria nº 331, de 26/05/2025',p:'Situações-problema e estudos de caso da formação e atuação do pedagogo. Subsídio: Diretrizes Curriculares Nacionais dos cursos de Pedagogia.',tags:['50 questões de múltipla escolha'],port:'p331'}
+  ],
+  pi:[
+   {b:'Acompanhar a legislação e os prazos',s:'Monitorar editais e portarias do ENADE/PND (este painel) e repassar os prazos à coordenação e aos estudantes. O Procurador inicia o acompanhamento antes das demais etapas.'},
+   {b:'Habilitar a IES e o curso no sistema',s:'Confirmar a participação da instituição e do curso no Sistema Enade/PND e manter os dados institucionais atualizados.'},
+   {b:'Designar os coordenadores no sistema',s:'Cadastrar e dar acesso aos coordenadores de curso no Sistema Enade/PND para as inscrições e o acompanhamento.'},
+   {b:'Declarações institucionais da IES',s:'Registrar no sistema as declarações de responsabilidade da IES nos prazos (ex.: estudantes irregulares ou não habilitados).'},
+   {b:'Acompanhar regularidade e resultados',s:'Conferir a regularidade geral da instituição e, ao final, acompanhar a divulgação dos resultados (Boletim / Conceito).'}
+  ],
+  coord:[
+   {b:'Inscrever ingressantes e retificar',s:'Retificação das inscrições de ingressantes até 25/10/2026 (a inscrição é do coordenador; o PI pode fazer de forma complementar).'},
+   {b:'Avaliação da Prática (AP)',s:'Cadastrar orientadores e supervisores de estágio e inscrever os estudantes na AP até 06/11/2026; acompanhar os questionários de AP.'},
+   {b:'Registro de presença',s:'Registrar a presença dos estudantes na prova (30/09 a 20/10/2026).'},
+   {b:'Acompanhar regularidade',s:'Conferir no Sistema PND quem está regular; orientar quem faltou sobre dispensa/reaplicação.'}
+  ],
+  estud:[
+   {b:'Questionário do Estudante',s:'Preenchimento é condição de regularidade. Resultado da licenciatura sai no Sistema PND (pnd.inep.gov.br).'},
+   {b:'Recursos de gabarito',s:'Recurso da expectativa de resposta da discursiva em 05–06/10/2026.'},
+   {b:'Avaliação da Prática (AP)',s:'Responder o Questionário de AP (até 16/11) e participar das atividades da prática.'},
+   {b:'Se faltou à prova',s:'Solicitar dispensa no prazo (20/11/2026 a 15/01/2027). Concluinte com doença infectocontagiosa pode requerer reaplicação (novidade).'}
+  ]
+ },
+ comp:{
+  nome:'Engenharia de Computação', grau:'Bacharelado', ano:'2026', wait:false,
+  prova:'Prova: 29/11/2026 — início 13h30, duração 4h',
+  prazos:[
+   {d:'03/08 a 29/11/2026',s:mk(2026,8,3),e:mk(2026,11,29),t:'Questionário do Estudante (concluinte) — 2º período',w:'Estudante',de:'Pode ser preenchido até o dia da prova (até 13h de 29/11).'},
+   {d:'09 a 29/11/2026',s:mk(2026,11,9),e:mk(2026,11,29),t:'Cartão de Confirmação (local de prova)',w:'INEP / Estudante',de:'Consultar o local de prova no Sistema Enade.'},
+   {d:'29/11/2026',s:mk(2026,11,29),e:mk(2026,11,29),t:'PROVA — Formação Geral + Específico',w:'Estudante',de:'Início 13h30 (horário de Brasília), duração de 4 horas. Levar documento com foto e caneta preta.'},
+   {d:'até 25/10/2026',s:mk(2026,9,18),e:mk(2026,10,25),t:'Retificação das inscrições de ingressantes',w:'Coordenador',de:'Prazo prorrogado na retificação de 01/10 (era 30/09).'},
+   {d:'26/10 a 18/12/2026',s:mk(2026,10,26),e:mk(2026,12,18),t:'Questionário do Ingressante',w:'Estudante (ingressante)',de:'Início mudou de 01/10 para 26/10 (retificação de 01/10).'},
+   {d:'03/12/2026 a 11/01/2027',s:mk(2026,12,3),e:mk(2027,1,11),t:'Registro de presença na prova (IES)',w:'Coordenador',de:'Confirmar a presença dos concluintes no Sistema Enade.'},
+   {d:'até 11/12/2026',s:mk(2026,12,11),e:mk(2026,12,11),t:'Divulgação de cadernos e gabaritos',w:'INEP',de:'Provas e gabaritos no Portal do Inep.'},
+   {d:'13/01 a 05/02/2027',s:mk(2027,1,13),e:mk(2027,2,5),t:'Dispensa de participação na prova',w:'Estudante / Coordenador',de:'Para quem não compareceu à prova.'}
+  ],
+  conteudo:[
+   {h:'Formação Geral',m:'Portaria nº 154, de 14/04/2026',p:'Comum a todos os bacharelados do ciclo — ética, cidadania, ciência e tecnologia, meio ambiente, entre outros.',tags:['15 questões de múltipla escolha'],port:'p154'},
+   {h:'Componente Específico — Eng. de Computação',m:'Portaria nº 161, de 14/04/2026',p:'Fundamentos de computação: algoritmos, redes, IA, banco de dados, sistemas embarcados, segurança, entre outros.',tags:['30 questões de múltipla escolha','1 questão discursiva'],port:'p161'}
+  ],
+  pi:[
+   {b:'Acompanhar a legislação e os prazos',s:'Monitorar editais e portarias do ENADE (este painel) e repassar os prazos à coordenação e aos estudantes. O Procurador inicia o acompanhamento antes das demais etapas.'},
+   {b:'Habilitar a IES e o curso no Sistema Enade',s:'Confirmar a participação da instituição e do curso e manter os dados institucionais atualizados.'},
+   {b:'Designar o coordenador no sistema',s:'Cadastrar e dar acesso ao coordenador de curso no Sistema Enade para as inscrições e o acompanhamento.'},
+   {b:'Declarações institucionais da IES',s:'Registrar no sistema as declarações de responsabilidade da IES nos prazos.'},
+   {b:'Acompanhar regularidade e resultados',s:'Conferir a regularidade geral e acompanhar a divulgação dos resultados (Conceito Enade / IGC).'}
+  ],
+  coord:[
+   {b:'Inscrever ingressantes e retificar',s:'Retificação das inscrições de ingressantes até 25/10/2026 (a inscrição é do coordenador; o PI pode fazer de forma complementar). Concluintes já foram inscritos (abr/mai).'},
+   {b:'Registro de presença',s:'Registrar a presença na prova de 03/12/2026 a 11/01/2027.'},
+   {b:'Acompanhar regularidade',s:'Acompanhar a regularidade dos estudantes no Sistema Enade.'}
+  ],
+  estud:[
+   {b:'Questionário do Estudante',s:'Preencher até o dia da prova (29/11). É condição de regularidade. Resultado sai no Sistema Enade.'},
+   {b:'Dia da prova — 29/11/2026',s:'Chegar cedo, levar documento com foto; respostas com caneta esferográfica preta. Início 13h30, 4 horas.'},
+   {b:'Se faltou à prova',s:'Solicitar dispensa de 13/01 a 05/02/2027.'}
+  ]
+ },
+ agro:{
+  nome:'Agronomia', grau:'Bacharelado', ano:'2027 (provável)', wait:true,
+  prova:'2027 — aguardando edital e portarias',
+  prazos:[], conteudo:[], pi:[], coord:[], estud:[]
+ },
+ enf:{
+  nome:'Enfermagem', grau:'Bacharelado', ano:'2027 (provável)', wait:true,
+  prova:'2027 — aguardando edital e portarias',
+  prazos:[], conteudo:[], pi:[], coord:[], estud:[]
+ }
+};
+
+var NOVI=[
+ {d:'01/10/2026',t:'Retificação do Edital 49 (DOU ed. 186)',x:'Retificação das inscrições de ingressantes prorrogada até 25/10; Questionário do Ingressante passa a 26/10–18/12; criado o recurso da expectativa de resposta da discursiva (05–06/10). Afeta os dois cursos.'},
+ {d:'01/10/2026',t:'Retificação do Edital 67 / PND (DOU ed. 186)',x:'Concluinte de licenciatura com doença infectocontagiosa passa a poder requerer reaplicação da prova (antes só dispensa). Afeta Pedagogia.'},
+ {d:'09/09/2026',t:'Retificação do Edital 49 (DOU ed. 170)',x:'Ajustes administrativos (remoção do item 9.2.2 e ajuste no Anexo III). Sem mudança nas datas de prova.'},
+ {d:'10/08/2026',t:'Republicação do Edital 49 (DOU ed. 149)',x:'Motivada pela reforma do Enamed (Medicina). Para nós: Questionário do Estudante do bacharelado passou a ter 2 períodos; a AP da Pedagogia (2º período) começou em 10–11/08. Provas mantidas.'}
+];
+
+var LINKS=[
+ {t:'Legislação ENADE (INEP)',u:'https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/enade'},
+ {t:'Legislação PND (INEP)',u:'https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/prova-nacional-docente'},
+ {t:'Sistema Enade',u:'https://enade.inep.gov.br/enade'},
+ {t:'Sistema PND',u:'https://pnd.inep.gov.br/pnd'}
+];
+
+/* conteúdo 100% verbatim das portarias (extraído do DOU) */
+var PORT=/*__PORT__*/;
+/* editais, com resumo e link oficial */
+var EDITAIS=/*__EDITAIS__*/;
+
+/* abas — "Procuradoria" só entra quando destravada (código) */
+function tabList(){
+  var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['editais','Editais']];
+  if(isPI) t.push(['pi','Procuradoria']);
+  t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['links','Links oficiais']);
+  return t;
+}
+
+/* ---------- render ---------- */
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function waitBox(txt){return '<div class="card wait-box"><div class="ic">🗓️</div><h3>Aguardando publicação (2027)</h3><p>'+esc(txt)+'</p></div>';}
+
+function renderTabs(){
+  var n=document.getElementById('tabs'); n.innerHTML='';
+  tabList().forEach(function(tb){
+    var b=document.createElement('button'); b.type='button'; b.textContent=tb[1];
+    b.setAttribute('role','tab'); b.setAttribute('aria-selected', tb[0]===curTab?'true':'false');
+    if(tb[0]==='pi') b.className='pi-tab';
+    b.onclick=function(){curTab=tb[0];renderTabs();renderMain();window.scrollTo(0,0);};
+    n.appendChild(b);
+  });
+}
+
+function prazoRow(p){
+  var st=statusFrom(p.s,p.e), cls=st[0], lab=st[1];
+  return '<div class="pz"><div class="date tnum">'+esc(p.d)+'<div class="who">'+esc(p.w)+'</div></div>'+
+    '<div class="bd ti">'+esc(p.t)+'<div class="de">'+esc(p.de)+'</div></div>'+
+    '<span class="chip '+cls+'">'+esc(lab)+'</span></div>';
+}
+
+function parseAud(w){
+  var a=[];
+  if(/procurad|institucional|\bPI\b/i.test(w))a.push('Procuradoria');
+  if(/coorden/i.test(w))a.push('Coordenador');
+  if(/estud|ingressante|concluinte/i.test(w))a.push('Estudante');
+  if(/inep/i.test(w))a.push('INEP');
+  if(!a.length)a.push('Geral');
+  return a;
+}
+function visibleToViewer(aud){ if(isPI) return true; return !(aud.length===1 && aud[0]==='Procuradoria'); }
+function days(to){return Math.ceil((to-TODAY)/864e5);}
+function calItem(it){
+  var p=it.p, cls=it.cls, when=it.when;
+  var auds=it.aud.map(function(a){return '<span class="aud aud-'+a+'">'+esc(a)+'</span>';}).join('');
+  var whcls = cls==='soon'?'s-urgent':(cls==='now'?'s-now':(cls==='next'?'s-soon':'s-past'));
+  return '<div class="cal-item '+cls+'"><div class="cal-bar"></div><div class="cal-bd">'+
+    '<div class="cal-top"><span class="cal-date tnum">'+esc(p.d)+'</span>'+
+    '<span class="cal-when '+whcls+'">'+esc(when)+'</span></div>'+
+    '<div class="cal-ti">'+esc(p.t)+'</div>'+
+    '<div class="cal-de">'+esc(p.de)+'</div>'+
+    '<div class="auds">'+auds+'</div></div></div>';
+}
+function renderCal(){
+  var c=DATA[curCourse];
+  if(c.wait) return '<div class="panel-head"><h2>Calendário</h2><span class="cx">'+esc(c.nome+' · '+c.grau)+'</span></div>'+
+    waitBox('O edital do ENADE/PND 2027 e as portarias de '+c.nome+' ainda não foram publicados pelo INEP. Quando saírem, o calendário deste curso será preenchido. O monitor semanal já está de olho.');
+  var items=c.prazos.map(function(p){
+    var aud=parseAud(p.w), bucket, ref, when;
+    if(p.e && TODAY>p.e){bucket='past';ref=p.e;when='Encerrado';}
+    else if(p.s && p.s>TODAY){var ds=days(p.s);bucket='next';ref=p.s;when=ds<=0?'Começa hoje':('Começa em '+ds+(ds===1?' dia':' dias'));}
+    else {ref=p.e||p.s;var de=p.e?days(p.e):999;bucket=de<=10?'soon':'now';when=p.e?(de<=0?'Encerra hoje':('Encerra em '+de+(de===1?' dia':' dias'))):'Em andamento';}
+    return {p:p,aud:aud,bucket:bucket,cls:bucket,ref:ref,when:when};
+  }).filter(function(it){return visibleToViewer(it.aud);});
+  function passAud(it){return calFilter==='todos'?true:it.aud.indexOf(calFilter)>=0;}
+  var asc=function(a,b){return (a.ref||0)-(b.ref||0);};
+  var desc=function(a,b){return (b.ref||0)-(a.ref||0);};
+  var nowA=items.filter(function(it){return (it.bucket==='now'||it.bucket==='soon')&&passAud(it);}).sort(asc);
+  var nextA=items.filter(function(it){return it.bucket==='next'&&passAud(it);}).sort(asc);
+  var pastA=items.filter(function(it){return it.bucket==='past'&&passAud(it);}).sort(desc);
+
+  var filDefs=[['todos','Todos']];
+  if(isPI) filDefs.push(['Procuradoria','Procuradoria']);
+  filDefs.push(['Coordenador','Coordenador'],['Estudante','Estudante']);
+  var fil=filDefs.map(function(f){
+    return '<button type="button" class="'+(f[0]==='Procuradoria'?'f-pi':'')+'" aria-pressed="'+(calFilter===f[0]?'true':'false')+'" onclick="calFilter=\''+f[0]+'\';renderMain();">'+esc(f[1])+'</button>';
+  }).join('');
+
+  var h='<div class="panel-head"><h2>Calendário</h2><span class="cx">'+esc(c.nome+' · '+c.grau)+'</span></div>'+
+    '<div class="cal-today">Hoje — <b>'+esc(fmtLongToday())+'</b></div>'+
+    '<div class="cal-filter">'+fil+'</div>';
+  h+='<div class="cal-group">Acontecendo agora</div>';
+  h+= nowA.length? '<div class="cal">'+nowA.map(calItem).join('')+'</div>' : '<div class="cal-empty">Nada em andamento neste momento para este filtro.</div>';
+  h+='<div class="cal-group">A seguir</div>';
+  h+= nextA.length? '<div class="cal">'+nextA.map(calItem).join('')+'</div>' : '<div class="cal-empty">Nenhum prazo futuro para este filtro.</div>';
+  if(pastA.length){
+    h+='<details class="cal-past"><summary>Já encerrado ('+pastA.length+')</summary><div class="cal" style="margin-top:8px">'+pastA.map(calItem).join('')+'</div></details>';
+  }
+  h+='<p class="note">O calendário se atualiza sozinho conforme a data de hoje: o que passa vai para “Já encerrado”. Use os filtros acima para ver o que compete a cada papel.</p>';
+  return h;
+}
+
+function checklist(arr,titulo,cx,piFlag,hintTxt){
+  var li=arr.map(function(o){return '<li><span class="mk">✓</span><span class="tx"><b>'+esc(o.b)+'</b><small>'+esc(o.s)+'</small></span></li>';}).join('');
+  return '<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+
+    (hintTxt?'<div class="role-hint">'+hintTxt+'</div>':'')+
+    '<div class="card"><ul class="ck'+(piFlag?' pi':'')+'">'+li+'</ul></div>';
+}
+
+function renderMain(){
+  var c=DATA[curCourse], host=document.getElementById('main'), h='';
+  var cx=c.nome+' · '+c.grau+(c.ano?(' · '+c.ano):'');
+  if(curTab==='cal'){
+    h=renderCal();
+  } else if(curTab==='prazos'){
+    if(c.wait){ h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O cronograma de '+c.nome+' (2027) sai com o edital do ENADE 2027. Ainda não publicado.'); }
+    else{
+    var rows=c.prazos.slice().map(prazoRow).join('');
+    h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+
+      '<div class="legend"><span><i style="background:var(--st-urgent)"></i>urgente / em breve</span>'+
+      '<span><i style="background:var(--st-now)"></i>aberto</span>'+
+      '<span><i style="background:var(--st-soon)"></i>a vir</span>'+
+      '<span><i style="background:var(--st-past)"></i>encerrado</span></div>'+
+      '<div class="card list" style="margin-top:10px">'+rows+'</div>'+
+      '<p class="note">Datas conforme Editais INEP nº 30, 49, 61 e 67/2026 e suas retificações (ver aba Editais). Status calculado automaticamente para a data de hoje.</p>';
+    }
+  } else if(curTab==='conteudo'){
+    if(c.wait){ h='<div class="panel-head"><h2>O que cai na prova</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('As portarias de matriz (Formação Geral e componente específico de '+c.nome+') do ciclo 2027 ainda não foram publicadas. Serão adicionadas aqui, na íntegra, quando saírem no DOU.'); }
+    else{
+    var bl=c.conteudo.map(function(o){
+      return '<button class="block blk" type="button" onclick="openPort(\''+o.port+'\')">'+
+        '<span class="blk-main"><h3>'+esc(o.h)+'</h3><span class="meta">'+esc(o.m)+'</span><span class="bp">'+esc(o.p)+'</span>'+
+        '<span class="tags">'+o.tags.map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('')+'</span></span>'+
+        '<span class="blk-go">Ver na tela ›</span></button>';
+    }).join('');
+    h='<div class="panel-head"><h2>O que cai na prova</h2><span class="cx">'+esc(cx)+'</span></div>'+
+      '<div class="card">'+bl+'</div>'+
+      '<p class="note">Clique em um componente para ver, na tela, o perfil, as competências com suas habilidades e os objetos de conhecimento — conteúdo reproduzido exatamente conforme a portaria oficial.</p>';
+    }
+  } else if(curTab==='editais'){
+    var eds=EDITAIS[curCourse]||[];
+    if(!eds.length){ h='<div class="panel-head"><h2>Editais</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O edital do ENADE 2027 (e o da PND 2027, se aplicável) ainda não foi publicado. Aparecerá aqui, com resumo e link oficial do DOU, quando sair.'); }
+    else{
+    var ed=eds.map(function(o,i){
+      return '<button class="block blk" type="button" onclick="openEdital(\''+curCourse+'\','+i+')">'+
+        '<span class="blk-main"><h3>'+esc(o.n)+'</h3><span class="meta">'+esc(o.tit)+' · '+esc(o.dt)+'</span>'+
+        '<span class="bp">'+esc(o.obj)+'</span></span>'+
+        '<span class="blk-go">Ver resumo ›</span></button>';
+    }).join('');
+    h='<div class="panel-head"><h2>Editais</h2><span class="cx">'+esc(cx)+'</span></div>'+
+      '<div class="card">'+ed+'</div>'+
+      '<p class="note">Clique em um edital para ver o resumo e o que ele significa para o curso; o botão abre o ato oficial no Diário Oficial da União (DOU).</p>';
+    }
+  } else if(curTab==='pi' || curTab==='coord' || curTab==='estud'){
+    var arr = curTab==='pi'?c.pi:(curTab==='coord'?c.coord:c.estud);
+    var titulo = curTab==='pi'?'O que a Procuradoria precisa cuidar':(curTab==='coord'?'O que o coordenador precisa cuidar':'O que o estudante precisa cuidar');
+    var hint = curTab==='pi'?'A Procuradoria Institucional inicia e acompanha o processo <b>antes</b> do coordenador e dos estudantes (legislação, habilitação, acessos e declarações da IES).':
+               (curTab==='coord'?'Depois da etapa institucional, o coordenador cuida das inscrições, da Avaliação da Prática (quando houver) e do acompanhamento dos seus estudantes.':
+               'Por fim, o estudante cumpre o que é dele: questionário, prova e, se precisar, recursos e dispensa.');
+    if(c.wait){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Será preenchido quando sair o edital de '+c.nome+' (2027).'); }
+    else if(!arr || !arr.length){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Nada a listar neste momento.'); }
+    else {
+      h=checklist(arr,titulo,cx,curTab==='pi',hint);
+      if(curTab==='pi') h+='<p class="note">Esta aba só aparece com o seu acesso (código) — os coordenadores não a veem. Lista proposta com base no fluxo oficial do ENADE/PND; ajuste conforme a rotina da SETREM (é só me avisar).</p>';
+    }
+  } else if(curTab==='novi'){
+    var nv=NOVI.map(function(o){return '<div class="novi"><div class="d tnum">'+esc(o.d)+'</div><div class="t">'+esc(o.t)+'</div><div class="x">'+esc(o.x)+'</div></div>';}).join('');
+    h='<div class="panel-head"><h2>Novidades e mudanças</h2><span class="cx">o que saiu depois do edital original</span></div>'+
+      '<div class="card list">'+nv+'</div>'+
+      '<p class="note">A republicação de 10/08 e boa parte das mudanças de datas foram motivadas pela reforma do Enamed (Medicina) — que não temos. Acima ficam apenas as que afetam os nossos cursos.</p>';
+  } else if(curTab==='links'){
+    var lk=LINKS.map(function(o){return '<a class="lk" href="'+esc(o.u)+'" target="_blank" rel="noopener"><div class="lt">'+esc(o.t)+'</div><div class="lu">'+esc(o.u)+'</div></a>';}).join('');
+    h='<div class="panel-head"><h2>Links oficiais</h2></div><div class="card links">'+lk+'</div>'+
+      '<p class="note">As duas páginas de legislação do INEP trazem a lista oficial e atualizada de editais, portarias e retificações do ENADE e da PND. Este painel é conferido semanalmente contra essas páginas.</p>';
+  }
+  host.innerHTML=h;
+}
+
+function pick(co){
+  curCourse=co;
+  ['ped','comp','agro','enf'].forEach(function(k){
+    var b=document.getElementById('btn-'+k); if(b) b.setAttribute('aria-selected', k===co?'true':'false');
+  });
+  renderMain();
+}
+
+['ped','comp','agro','enf'].forEach(function(k){
+  var el=document.getElementById('pv-'+k); if(el) el.textContent=DATA[k].prova;
+});
+
+/* tema (por visitante) */
+(function(){
+  var root=document.documentElement, key='painel-enade-theme';
+  try{var sv=localStorage.getItem(key); if(sv)root.setAttribute('data-theme',sv);}catch(e){}
+  document.getElementById('theme').onclick=function(){
+    var cur=root.getAttribute('data-theme');
+    var mq=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var now=cur?cur:(mq?'dark':'light');
+    var nx=now==='dark'?'light':'dark';
+    root.setAttribute('data-theme',nx);
+    try{localStorage.setItem(key,nx);}catch(e){}
+  };
+})();
+
+/* ---------- acesso da Procuradoria (destrava aba/filtro com código) ---------- */
+function applyPI(){ document.body.classList.toggle('pi', isPI); }
+(function(){
+  var acc=document.getElementById('pi-access'), form=document.getElementById('pi-form'),
+      code=document.getElementById('pi-code'), enter=document.getElementById('pi-enter'), msg=document.getElementById('pi-msg');
+  function refreshAccess(){ acc.textContent = isPI ? 'Sair do modo Procuradoria' : 'Acesso da Procuradoria Institucional'; }
+  acc.onclick=function(){
+    if(isPI){ isPI=false; try{localStorage.removeItem('painel-enade-pi');}catch(e){}
+      applyPI(); if(curTab==='pi')curTab='cal'; refreshAccess(); renderTabs(); renderMain(); return; }
+    form.style.display = form.style.display==='flex' ? 'none' : 'flex'; if(code)code.focus();
+  };
+  function tryEnter(){
+    if((code.value||'').trim().toLowerCase()===PI_CODE){
+      isPI=true; try{localStorage.setItem('painel-enade-pi','1');}catch(e){}
+      msg.hidden=true; form.style.display='none'; code.value='';
+      applyPI(); refreshAccess(); renderTabs(); renderMain();
+    } else { msg.hidden=false; }
+  }
+  enter.onclick=tryEnter;
+  code.addEventListener('keydown',function(e){if(e.key==='Enter')tryEnter();});
+  refreshAccess();
+})();
+
+/* ---------- modal ---------- */
+function showModal(h){
+  document.getElementById('modal-body').innerHTML=h;
+  var m=document.getElementById('modal'); m.hidden=false;
+  m.querySelector('.modal-box').scrollTop=0;
+  try{document.body.style.overflow='hidden';}catch(e){}
+}
+function openPort(key){
+  var p=PORT[key]; if(!p)return;
+  var h='<h2 class="mh">'+esc(p.t)+'</h2><div class="mq">'+esc(p.q)+'</div>';
+  h+='<h4>Perfil do(a) concluinte</h4><ul class="ml">'+p.perfil.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';
+  h+='<h4>Competências e habilidades</h4>';
+  h+=p.comp.map(function(cp){
+     return '<div class="mc"><div class="mc-s">'+esc(cp.s)+'</div>'+
+       ((cp.hab&&cp.hab.length)?'<ul class="ml mc-h">'+cp.hab.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'')+
+       '</div>';
+  }).join('');
+  h+='<h4>Objetos de conhecimento ('+p.obj.length+')</h4><ol class="mo">'+p.obj.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol>';
+  h+='<a class="mlink" href="'+esc(p.link)+'" target="_blank" rel="noopener">Abrir a portaria oficial no Diário Oficial (DOU) ›</a>';
+  showModal(h);
+}
+function openEdital(co,i){
+  var o=EDITAIS[co][i]; if(!o)return;
+  var nome=DATA[co]?DATA[co].nome:'';
+  var h='<h2 class="mh">'+esc(o.n)+'</h2><div class="mq">'+esc(o.tit)+' · '+esc(o.dt)+'</div>';
+  h+='<h4>Objeto</h4><p class="mp">'+esc(o.obj)+'</p>';
+  if(o.pts&&o.pts.length){h+='<h4>O que significa para '+esc(nome)+'</h4><ul class="ml">'+o.pts.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';}
+  if(o.retif&&o.retif.length){h+='<h4>Republicações e retificações</h4><ul class="ml">'+o.retif.map(function(r){return '<li>'+(r.d?('<b>'+esc(r.d)+'</b> — '):'')+'<a href="'+esc(r.link)+'" target="_blank" rel="noopener">'+esc(r.t)+'</a></li>';}).join('')+'</ul>';}
+  h+='<a class="mlink" href="'+esc(o.link)+'" target="_blank" rel="noopener">Abrir no '+esc(o.lb)+' ›</a>';
+  showModal(h);
+}
+function closePort(){var m=document.getElementById('modal'); m.hidden=true; try{document.body.style.overflow='';}catch(e){}}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closePort();});
+
+applyPI(); renderTabs(); renderMain();
+</script>
