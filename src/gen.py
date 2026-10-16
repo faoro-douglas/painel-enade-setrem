@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import json, io
+import json, io, os
 
 PORT = json.load(io.open("port.json", encoding="utf-8"))
 # normaliza links para o DOU em portugues (sem /en/)
@@ -58,8 +58,20 @@ EDITAIS = {
  "enf": [],
 }
 
+# novidades: as detectadas pelo robô (novidades_auto.json) vão no topo, seguidas dos marcos fixos (novidades.json)
+NOVI = json.load(io.open("novidades.json", encoding="utf-8"))
+if os.path.exists("novidades_auto.json"):
+    try:
+        NOVI = json.load(io.open("novidades_auto.json", encoding="utf-8")) + NOVI
+    except Exception:
+        pass
+
+ATOS = json.load(io.open("atos.json", encoding="utf-8")) if os.path.exists("atos.json") else []
+
 tpl = io.open("template.html", encoding="utf-8").read()
 html = tpl.replace("/*__PORT__*/", json.dumps(PORT, ensure_ascii=False)) \
-          .replace("/*__EDITAIS__*/", json.dumps(EDITAIS, ensure_ascii=False))
+          .replace("/*__EDITAIS__*/", json.dumps(EDITAIS, ensure_ascii=False)) \
+          .replace("/*__NOVI__*/", json.dumps(NOVI, ensure_ascii=False)) \
+          .replace("/*__ATOS__*/", json.dumps(ATOS, ensure_ascii=False))
 io.open("../index.html", "w", encoding="utf-8", newline="\n").write(html)
 print("OK -> ../index.html", len(html), "bytes")

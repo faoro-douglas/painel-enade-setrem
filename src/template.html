@@ -230,6 +230,22 @@
   .mo li{margin:3px 0;break-inside:avoid}
   @media (max-width:520px){.mo{columns:1}}
   .mlink{display:inline-block;margin-top:18px;font-weight:700}
+
+  /* aba Legislação (lista automática de atos) */
+  .lei-busca{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px;
+    background:var(--surface);color:var(--ink);font-family:var(--font-b);margin:0 0 10px}
+  .lei-item{display:grid;grid-template-columns:90px 1fr auto;gap:12px;align-items:start;padding:11px 14px;
+    text-decoration:none;color:inherit}
+  .lei-item + .lei-item{border-top:1px solid var(--line)}
+  .lei-item:hover{background:var(--surface2)}
+  .lei-d{font-family:var(--font-d);font-weight:600;font-size:13.5px;color:var(--muted)}
+  .lei-main{min-width:0}
+  .lei-t{display:block;font-weight:600;color:var(--ink)}
+  .lei-e{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+  .lei-f{align-self:center;font-size:10px;font-weight:700;letter-spacing:.4px;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .lf-INEP{color:var(--teal);background:var(--st-now-bg)}
+  .lf-MEC{color:var(--amber);background:var(--st-soon-bg)}
+  @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}}
 </style>
 
 <header class="top">
@@ -402,12 +418,7 @@ var DATA = {
  }
 };
 
-var NOVI=[
- {d:'01/10/2026',t:'Retificação do Edital 49 (DOU ed. 186)',x:'Retificação das inscrições de ingressantes prorrogada até 25/10; Questionário do Ingressante passa a 26/10–18/12; criado o recurso da expectativa de resposta da discursiva (05–06/10). Afeta os dois cursos.'},
- {d:'01/10/2026',t:'Retificação do Edital 67 / PND (DOU ed. 186)',x:'Concluinte de licenciatura com doença infectocontagiosa passa a poder requerer reaplicação da prova (antes só dispensa). Afeta Pedagogia.'},
- {d:'09/09/2026',t:'Retificação do Edital 49 (DOU ed. 170)',x:'Ajustes administrativos (remoção do item 9.2.2 e ajuste no Anexo III). Sem mudança nas datas de prova.'},
- {d:'10/08/2026',t:'Republicação do Edital 49 (DOU ed. 149)',x:'Motivada pela reforma do Enamed (Medicina). Para nós: Questionário do Estudante do bacharelado passou a ter 2 períodos; a AP da Pedagogia (2º período) começou em 10–11/08. Provas mantidas.'}
-];
+var NOVI=/*__NOVI__*/;
 
 var LINKS=[
  {t:'Legislação ENADE (INEP)',u:'https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/enade'},
@@ -420,12 +431,14 @@ var LINKS=[
 var PORT=/*__PORT__*/;
 /* editais, com resumo e link oficial */
 var EDITAIS=/*__EDITAIS__*/;
+/* lista completa de atos ENADE/PND reunida pelo robô (INEP + mecnormas/MEC) */
+var ATOS=/*__ATOS__*/;
 
 /* abas — "Procuradoria" só entra quando destravada (código) */
 function tabList(){
   var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['editais','Editais']];
   if(isPI) t.push(['pi','Procuradoria']);
-  t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['links','Links oficiais']);
+  t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['leg','Legislação'],['links','Links oficiais']);
   return t;
 }
 
@@ -576,10 +589,22 @@ function renderMain(){
       if(curTab==='pi') h+='<p class="note">Esta aba só aparece com o seu acesso (código) — os coordenadores não a veem. Lista proposta com base no fluxo oficial do ENADE/PND; ajuste conforme a rotina da SETREM (é só me avisar).</p>';
     }
   } else if(curTab==='novi'){
-    var nv=NOVI.map(function(o){return '<div class="novi"><div class="d tnum">'+esc(o.d)+'</div><div class="t">'+esc(o.t)+'</div><div class="x">'+esc(o.x)+'</div></div>';}).join('');
+    var nv=NOVI.map(function(o){return '<div class="novi"><div class="d tnum">'+esc(o.d)+'</div><div class="t">'+esc(o.t)+'</div><div class="x">'+esc(o.x)+(o.link?' <a href="'+esc(o.link)+'" target="_blank" rel="noopener">ver no DOU ›</a>':'')+'</div></div>';}).join('');
     h='<div class="panel-head"><h2>Novidades e mudanças</h2><span class="cx">o que saiu depois do edital original</span></div>'+
       '<div class="card list">'+nv+'</div>'+
       '<p class="note">A republicação de 10/08 e boa parte das mudanças de datas foram motivadas pela reforma do Enamed (Medicina) — que não temos. Acima ficam apenas as que afetam os nossos cursos.</p>';
+  } else if(curTab==='leg'){
+    var rows=ATOS.map(function(o){
+      return '<a class="lei-item" href="'+esc(o.link)+'" target="_blank" rel="noopener" data-s="'+esc((o.titulo+' '+(o.ementa||'')+' '+(o.d||'')).toLowerCase())+'">'+
+        '<span class="lei-d tnum">'+esc(o.d||'—')+'</span>'+
+        '<span class="lei-main"><span class="lei-t">'+esc(o.titulo)+'</span>'+
+        (o.ementa?'<span class="lei-e">'+esc(o.ementa)+'</span>':'')+'</span>'+
+        '<span class="lei-f lf-'+esc(o.fonte)+'">'+esc(o.fonte)+'</span></a>';
+    }).join('');
+    h='<div class="panel-head"><h2>Legislação — todos os atos</h2><span class="cx">ENADE e PND · '+ATOS.length+' atos</span></div>'+
+      '<input class="lei-busca" id="lei-busca" type="search" placeholder="Buscar por número, curso, assunto…" oninput="filtraLeg(this.value)">'+
+      '<div class="card" id="lei-lista">'+(rows||'<div class="cal-empty">Lista ainda não gerada.</div>')+'</div>'+
+      '<p class="note">Lista completa e automática dos editais, portarias e retificações do ENADE e da PND — dos nossos cursos e os atos gerais — reunida das páginas do INEP e do mecnormas (MEC). Clique para abrir o ato oficial. O robô atualiza toda semana: você não precisa procurar em mais nenhum lugar.</p>';
   } else if(curTab==='links'){
     var lk=LINKS.map(function(o){return '<a class="lk" href="'+esc(o.u)+'" target="_blank" rel="noopener"><div class="lt">'+esc(o.t)+'</div><div class="lu">'+esc(o.u)+'</div></a>';}).join('');
     h='<div class="panel-head"><h2>Links oficiais</h2></div><div class="card links">'+lk+'</div>'+
@@ -588,6 +613,12 @@ function renderMain(){
   host.innerHTML=h;
 }
 
+function filtraLeg(q){
+  q=(q||'').toLowerCase().trim();
+  [].forEach.call(document.querySelectorAll('#lei-lista .lei-item'),function(el){
+    el.style.display = (!q || (el.getAttribute('data-s')||'').indexOf(q)>=0) ? '' : 'none';
+  });
+}
 function pick(co){
   curCourse=co;
   ['ped','comp','agro','enf'].forEach(function(k){
