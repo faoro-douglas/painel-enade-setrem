@@ -35,7 +35,9 @@ RELEV  = re.compile(r"enade|prova nacional docente|\bpnd\b|forma[cç][aã]o gera
 # matrizes/diretrizes de componente específico: manter só as dos nossos cursos (as de
 # outras licenciaturas/bacharelados — Letras, Dança, Química etc. — são ruído para a SETREM)
 MATRIZ = re.compile(r"componentes? espec[ií]ficos?|matriz de refer[eê]ncia|diretrizes de prova", re.I)
-NOSSOS = re.compile(r"pedagogia|engenharia de computa[cç][aã]o|\bagronomia\b|enfermagem|forma[cç][aã]o geral", re.I)
+# os 7 cursos da SETREM (cada um avaliado no seu ano do ciclo) + Formação Geral (comum)
+NOSSOS = re.compile(r"pedagogia|engenharia de computa[cç][aã]o|\bagronomia\b|enfermagem|"
+                    r"psicologia|administra[cç][aã]o|\bdireito\b|forma[cç][aã]o geral", re.I)
 MESES = "janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro".split()
 
 def incluir(a):
