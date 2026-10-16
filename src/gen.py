@@ -56,6 +56,9 @@ EDITAIS = {
  ],
  "agro": [],
  "enf": [],
+ "adm": [],
+ "dir": [],
+ "psi": [],
 }
 
 # novidades: as detectadas pelo robô (novidades_auto.json) vão no topo, seguidas dos marcos fixos (novidades.json)

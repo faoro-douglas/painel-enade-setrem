@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Painel ENADE 2026</title>
-<meta name="description" content="Painel ENADE da Faculdade Três de Maio (SETREM): prazos, conteúdo das provas, editais e responsabilidades. Pedagogia e Eng. de Computação (2026); Agronomia e Enfermagem (2027).">
+<meta name="description" content="Painel ENADE e PND da Faculdade Três de Maio (SETREM): prazos, conteúdo das provas, editais, legislação e responsabilidades dos 7 cursos de graduação.">
 <style>
   :root{
     --bg:#eef1f5; --surface:#ffffff; --surface2:#f4f7fa; --line:#d8e0ea;
@@ -75,10 +75,14 @@
   .course[aria-selected="true"].c-comp{border-color:var(--teal);background:var(--st-now-bg)}
   .course[aria-selected="true"].c-agro{border-color:var(--green)}
   .course[aria-selected="true"].c-enf{border-color:var(--wine)}
+  .course[aria-selected="true"].c-adm{border-color:#3a5fa8}
+  .course[aria-selected="true"].c-dir{border-color:#9c7b2e}
+  .course[aria-selected="true"].c-psi{border-color:#5f7585}
   .course .dot{width:42px;height:42px;border-radius:10px;flex:0 0 auto;display:grid;place-items:center;
     color:#fff;font-family:var(--font-d);font-size:20px;font-weight:600}
   .c-ped .dot{background:var(--amber)} .c-comp .dot{background:var(--teal)}
   .c-agro .dot{background:var(--green)} .c-enf .dot{background:var(--wine)}
+  .c-adm .dot{background:#3a5fa8} .c-dir .dot{background:#9c7b2e} .c-psi .dot{background:#5f7585}
   .course .nm{font-family:var(--font-d);font-size:16.5px;font-weight:600}
   .course .gr{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
   .course .pv{font-size:12px;color:var(--ink);margin-top:3px}
@@ -252,7 +256,7 @@
   <div class="wrap">
     <div>
       <h1>Painel ENADE 2026 <span class="pi-badge">Procuradoria</span></h1>
-      <div class="sub">Faculdade Três de Maio — SETREM · Pedagogia e Eng. de Computação (2026) · Agronomia e Enfermagem (2027)</div>
+      <div class="sub">Faculdade Três de Maio — SETREM · ENADE e PND dos 7 cursos de graduação</div>
     </div>
     <div class="spacer"></div>
     <div class="updated tnum">Conteúdo revisado em <b id="upd">02/10/2026</b></div>
@@ -281,6 +285,21 @@
       <span class="dot">E</span><span class="yr">2027</span>
       <span><span class="nm">Enfermagem</span><br><span class="gr">Bacharelado</span>
       <span class="pv" id="pv-enf"></span></span>
+    </button>
+    <button class="course c-adm wait" id="btn-adm" role="tab" aria-selected="false" onclick="pick('adm')">
+      <span class="dot">Ad</span><span class="yr">2028</span>
+      <span><span class="nm">Administração</span><br><span class="gr">Bacharelado</span>
+      <span class="pv" id="pv-adm"></span></span>
+    </button>
+    <button class="course c-dir wait" id="btn-dir" role="tab" aria-selected="false" onclick="pick('dir')">
+      <span class="dot">D</span><span class="yr">2028</span>
+      <span><span class="nm">Direito</span><br><span class="gr">Bacharelado</span>
+      <span class="pv" id="pv-dir"></span></span>
+    </button>
+    <button class="course c-psi wait" id="btn-psi" role="tab" aria-selected="false" onclick="pick('psi')">
+      <span class="dot">Ps</span><span class="yr">2028</span>
+      <span><span class="nm">Psicologia</span><br><span class="gr">Bacharelado</span>
+      <span class="pv" id="pv-psi"></span></span>
     </button>
   </div>
 
@@ -415,6 +434,21 @@ var DATA = {
   nome:'Enfermagem', grau:'Bacharelado', ano:'2027 (provável)', wait:true,
   prova:'2027 — aguardando edital e portarias',
   prazos:[], conteudo:[], pi:[], coord:[], estud:[]
+ },
+ adm:{
+  nome:'Administração', grau:'Bacharelado', ano:'2028 (Ano I)', wait:true,
+  prova:'2028 — aguardando edital e portarias',
+  prazos:[], conteudo:[], pi:[], coord:[], estud:[]
+ },
+ dir:{
+  nome:'Direito', grau:'Bacharelado', ano:'2028 (Ano I)', wait:true,
+  prova:'2028 — aguardando edital e portarias',
+  prazos:[], conteudo:[], pi:[], coord:[], estud:[]
+ },
+ psi:{
+  nome:'Psicologia', grau:'Bacharelado', ano:'2028 (Ano I)', wait:true,
+  prova:'2028 — aguardando edital e portarias',
+  prazos:[], conteudo:[], pi:[], coord:[], estud:[]
  }
 };
 
@@ -444,7 +478,7 @@ function tabList(){
 
 /* ---------- render ---------- */
 function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
-function waitBox(txt){return '<div class="card wait-box"><div class="ic">🗓️</div><h3>Aguardando publicação (2027)</h3><p>'+esc(txt)+'</p></div>';}
+function waitBox(txt){return '<div class="card wait-box"><div class="ic">🗓️</div><h3>Aguardando publicação</h3><p>'+esc(txt)+'</p></div>';}
 
 function renderTabs(){
   var n=document.getElementById('tabs'); n.innerHTML='';
@@ -489,7 +523,7 @@ function calItem(it){
 function renderCal(){
   var c=DATA[curCourse];
   if(c.wait) return '<div class="panel-head"><h2>Calendário</h2><span class="cx">'+esc(c.nome+' · '+c.grau)+'</span></div>'+
-    waitBox('O edital do ENADE/PND 2027 e as portarias de '+c.nome+' ainda não foram publicados pelo INEP. Quando saírem, o calendário deste curso será preenchido. O monitor semanal já está de olho.');
+    waitBox('O edital e as portarias de '+c.nome+' (avaliação de '+c.ano.replace(/\s*\(.*\)/,'')+') ainda não foram publicados pelo INEP. Quando saírem, o calendário deste curso será preenchido. O monitor semanal já está de olho.');
   var items=c.prazos.map(function(p){
     var aud=parseAud(p.w), bucket, ref, when;
     if(p.e && TODAY>p.e){bucket='past';ref=p.e;when='Encerrado';}
@@ -538,7 +572,7 @@ function renderMain(){
   if(curTab==='cal'){
     h=renderCal();
   } else if(curTab==='prazos'){
-    if(c.wait){ h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O cronograma de '+c.nome+' (2027) sai com o edital do ENADE 2027. Ainda não publicado.'); }
+    if(c.wait){ h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O cronograma de '+c.nome+' sai com o edital da próxima avaliação deste curso no ENADE. Ainda não publicado.'); }
     else{
     var rows=c.prazos.slice().map(prazoRow).join('');
     h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+
@@ -550,7 +584,7 @@ function renderMain(){
       '<p class="note">Datas conforme Editais INEP nº 30, 49, 61 e 67/2026 e suas retificações (ver aba Editais). Status calculado automaticamente para a data de hoje.</p>';
     }
   } else if(curTab==='conteudo'){
-    if(c.wait){ h='<div class="panel-head"><h2>O que cai na prova</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('As portarias de matriz (Formação Geral e componente específico de '+c.nome+') do ciclo 2027 ainda não foram publicadas. Serão adicionadas aqui, na íntegra, quando saírem no DOU.'); }
+    if(c.wait){ h='<div class="panel-head"><h2>O que cai na prova</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('As portarias de matriz (Formação Geral e componente específico de '+c.nome+') ainda não foram publicadas. Serão adicionadas aqui, na íntegra, quando saírem no DOU.'); }
     else{
     var bl=c.conteudo.map(function(o){
       return '<button class="block blk" type="button" onclick="openPort(\''+o.port+'\')">'+
@@ -564,7 +598,7 @@ function renderMain(){
     }
   } else if(curTab==='editais'){
     var eds=EDITAIS[curCourse]||[];
-    if(!eds.length){ h='<div class="panel-head"><h2>Editais</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O edital do ENADE 2027 (e o da PND 2027, se aplicável) ainda não foi publicado. Aparecerá aqui, com resumo e link oficial do DOU, quando sair.'); }
+    if(!eds.length){ h='<div class="panel-head"><h2>Editais</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O edital do ENADE/PND da próxima avaliação de '+c.nome+' ainda não foi publicado. Aparecerá aqui, com resumo e link oficial do DOU, quando sair.'); }
     else{
     var ed=eds.map(function(o,i){
       return '<button class="block blk" type="button" onclick="openEdital(\''+curCourse+'\','+i+')">'+
@@ -582,7 +616,7 @@ function renderMain(){
     var hint = curTab==='pi'?'A Procuradoria Institucional inicia e acompanha o processo <b>antes</b> do coordenador e dos estudantes (legislação, habilitação, acessos e declarações da IES).':
                (curTab==='coord'?'Depois da etapa institucional, o coordenador cuida das inscrições, da Avaliação da Prática (quando houver) e do acompanhamento dos seus estudantes.':
                'Por fim, o estudante cumpre o que é dele: questionário, prova e, se precisar, recursos e dispensa.');
-    if(c.wait){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Será preenchido quando sair o edital de '+c.nome+' (2027).'); }
+    if(c.wait){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Será preenchido quando sair o edital de '+c.nome+'.'); }
     else if(!arr || !arr.length){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Nada a listar neste momento.'); }
     else {
       h=checklist(arr,titulo,cx,curTab==='pi',hint);
@@ -621,13 +655,13 @@ function filtraLeg(q){
 }
 function pick(co){
   curCourse=co;
-  ['ped','comp','agro','enf'].forEach(function(k){
+  ['ped','comp','agro','enf','adm','dir','psi'].forEach(function(k){
     var b=document.getElementById('btn-'+k); if(b) b.setAttribute('aria-selected', k===co?'true':'false');
   });
   renderMain();
 }
 
-['ped','comp','agro','enf'].forEach(function(k){
+['ped','comp','agro','enf','adm','dir','psi'].forEach(function(k){
   var el=document.getElementById('pv-'+k); if(el) el.textContent=DATA[k].prova;
 });
 
