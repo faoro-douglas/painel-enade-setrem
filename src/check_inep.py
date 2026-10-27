@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Robô de vigilância da legislação do ENADE e da PND.
-Lê DUAS fontes oficiais e junta tudo que for de ENADE/PND (sem perder nada):
-  1) INEP — páginas de legislação (ENADE e PND), via as sub-páginas que o curl lê.
+Lê fontes oficiais e junta tudo que for de ENADE/PND e dos indicadores de
+qualidade (CPC, IGC, IDD) — sem perder nada:
+  1) INEP — páginas de legislação de ENADE, PND e Indicadores de Qualidade
+            (sub-páginas por ano, que o curl lê).
   2) MEC  — mecnormas (API /pesquisa/api/atos), filtrando pelos assuntos
             "ENADE" (153153) e "Prova Nacional Docente - PND" (164503).
 Monta a lista COMPLETA de atos (atos.json, mostrada na aba "Legislação" do painel)
@@ -16,6 +18,11 @@ INEP_URLS = [
  "https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/enade/2025",
  "https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/prova-nacional-docente/2026-1",
  "https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/prova-nacional-docente/2025",
+]
+# indicadores de qualidade (CPC/IGC/IDD): páginas de legislação por ano (curl lê os links do DOU)
+INEP_INDIC_URLS = [
+ "https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/indicadores-de-qualidade-da-educacao-superior/2026",
+ "https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/indicadores-de-qualidade-da-educacao-superior/2025",
 ]
 MEC_ASSUNTOS = {"ENADE": 153153, "PND": 164503}   # ids de assunto no mecnormas
 def mec_url(aid, page=1):
@@ -38,6 +45,9 @@ MATRIZ = re.compile(r"componentes? espec[ií]ficos?|matriz de refer[eê]ncia|dir
 # os 7 cursos da SETREM (cada um avaliado no seu ano do ciclo) + Formação Geral (comum)
 NOSSOS = re.compile(r"pedagogia|engenharia de computa[cç][aã]o|\bagronomia\b|enfermagem|"
                     r"psicologia|administra[cç][aã]o|\bdireito\b|forma[cç][aã]o geral", re.I)
+# indicadores de qualidade: CPC, IGC e IDD (acrescentados a pedido — mapear também quando saírem)
+INDIC  = re.compile(r"\bcpc\b|conceito preliminar de curso|\bigc\b|[íi]ndice geral de cursos|"
+                    r"\bidd\b|indicador de diferen[cç]a|indicadores? de qualidade", re.I)
 MESES = "janeiro fevereiro março abril maio junho julho agosto setembro outubro novembro dezembro".split()
 
 def incluir(a):
@@ -47,6 +57,8 @@ def incluir(a):
     ano = int(a["iso"][:4]) if a["iso"] else None
     if ano is not None and ano <= 2024:
         return False
+    if a.get("indic") or INDIC.search(txt):     # página de indicadores, ou texto cita CPC/IGC/IDD: sempre manter (ciclo atual)
+        return True
     if ano == 2025:                             # ciclo 2025: só as 2 matrizes de licenciatura ainda vigentes dos nossos (315 Docente, 331 Pedagogia)
         return bool(MATRIZ.search(txt) and re.search(r"pedagogia|forma[cç][aã]o geral docente", txt, re.I))
     if MATRIZ.search(txt):                       # matriz de curso (2026+): só a dos nossos cursos
@@ -97,8 +109,9 @@ def mkato(titulo, link, fonte, ementa="", datestr=None):
             "link": link, "fonte": fonte, "ementa": (ementa or "").strip()[:220]}
 
 def from_inep():
-    out, ok = [], 0
-    for u in INEP_URLS:
+    out, ok, total = [], 0, len(INEP_URLS) + len(INEP_INDIC_URLS)
+    for u in INEP_URLS + INEP_INDIC_URLS:
+        is_indic = u in INEP_INDIC_URLS
         h = fetch(u)
         if h:
             ok += 1
@@ -107,9 +120,11 @@ def from_inep():
             titulo = re.sub(r"\s+", " ", m.group(2)).strip()
             if titulo and INCLUI.search(titulo):
                 a = mkato(titulo, link, "INEP")
+                if is_indic:
+                    a["indic"] = True
                 if incluir(a):
                     out.append(a)
-    return out, ok
+    return out, ok, total
 
 def from_mec():
     out, ok = [], 0
@@ -149,9 +164,9 @@ def load(p, default):
     return default
 
 def main():
-    inep, ok1 = from_inep()
+    inep, ok1, tot1 = from_inep()
     mec, ok2 = from_mec()
-    print("Fontes: INEP %d/4 páginas | mecnormas %s" % (ok1, "ok" if ok2 else "FALHOU"))
+    print("Fontes: INEP %d/%d páginas | mecnormas %s" % (ok1, tot1, "ok" if ok2 else "FALHOU"))
     if ok1 == 0 and ok2 == 0:
         print("CHECAGEM PARCIAL: nenhuma fonte respondeu nesta rodada.")
         return

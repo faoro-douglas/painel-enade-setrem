@@ -614,13 +614,35 @@ function renderNota(){
   } else {
     h+=waitBox('O último Conceito Enade de '+c.nome+' será incluído aqui. '+(c.wait?('A próxima avaliação deste curso é em '+anoSel+'.'):'O resultado é divulgado pelo INEP após a prova; assim que sair, aparece aqui.'));
   }
-  h+=comoSaiNota();
+  var cp=(r&&r.cpc)||null;
+  if(cp){
+    h+='<h3 class="nt-h">CPC — Conceito Preliminar de Curso</h3>'+
+       '<div class="card"><div class="nt-res"><span class="nt-ano tnum">'+esc(String(cp.ano))+'</span>'+
+       '<span class="nt-cc cc-'+esc(String(cp.faixa))+'">Faixa '+esc(String(cp.faixa))+'</span>'+
+       '<span class="nt-det">nota contínua '+esc(String(cp.continuo))+
+       (cp.fonte?'<br><a class="nt-fonte" href="'+esc(cp.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(cp.fonte)+' ›</a>':'')+
+       '</span></div></div>';
+  }
+  var igc=(typeof RESULTADOS!=='undefined'&&RESULTADOS.igc)||null;
+  if(igc){
+    h+='<h3 class="nt-h">IGC — Índice Geral de Cursos · institucional (SETREM)</h3>'+
+       '<div class="card"><div class="nt-res"><span class="nt-ano tnum">'+esc(String(igc.ano))+'</span>'+
+       '<span class="nt-cc cc-'+esc(String(igc.faixa))+'">Faixa '+esc(String(igc.faixa))+'</span>'+
+       '<span class="nt-det">nota contínua '+esc(String(igc.continuo))+
+       (igc.cursos_no_trienio?' · '+esc(String(igc.cursos_no_trienio))+' cursos com CPC no triênio '+esc(String(igc.trienio||'')):'')+
+       (igc.fonte?'<br><a class="nt-fonte" href="'+esc(igc.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(igc.fonte)+' ›</a>':'')+
+       '</span></div></div>';
+    h+='<p class="note">O IGC é da instituição, não do curso: inclui também cursos com CPC no triênio que não aparecem neste painel.'+(igc.proximo?' '+esc(igc.proximo):'')+'</p>';
+  }
+  h+=comoSaiNota(c);
   return h;
 }
-function comoSaiNota(){
-  return '<h3 class="nt-h2">Como sai a nota do ENADE</h3>'+
-  '<p class="nt-intro">Resumo das regras oficiais do Inep — cada item indica o ato de origem.</p>'+
-  '<h4 class="nt-sec">1. Bacharelados — a partir da edição de 2025</h4>'+
+function comoSaiNota(c){
+  var lic=/licenc/i.test(c.grau);
+  var h='<h3 class="nt-h2">Como sai a nota do ENADE</h3>'+
+  '<p class="nt-intro">Resumo das regras oficiais do Inep — cada item indica o ato de origem.</p>';
+  if(!lic){ h+=
+  '<h4 class="nt-sec">1. Bacharelado — a partir da edição de 2025</h4>'+
   '<div class="nt-block"><div class="nt-t">Nota do aluno (Nota Geral, de 0 a 100)</div><ul class="nt-ul">'+
    '<li>Nota Geral = 0,8 × nota das questões objetivas (0 a 100) + nota da questão discursiva (0 a 20). <span class="ato">NT Inep nº 15/2026, item 7.4</span></li>'+
    '<li>As questões objetivas de Formação Geral e de Componente Específico formam uma nota só. <span class="ato">NT 15/2026, item 4.1</span></li>'+
@@ -638,8 +660,9 @@ function comoSaiNota(){
     '<li><span class="nt-cc cc-3">3</span> de 1,945 a menos de 2,945</li>'+
     '<li><span class="nt-cc cc-4">4</span> de 2,945 a menos de 3,945</li>'+
     '<li><span class="nt-cc cc-5">5</span> de 3,945 a 5</li>'+
-  '</ul></div><p class="nt-obs">Para a prova de 2026, o Inep informou que a nota técnica do cálculo será publicada posteriormente. <span class="ato">Edital Inep nº 61/2026, item 16.5</span></p></div>'+
-  '<h4 class="nt-sec">2. Licenciaturas (Pedagogia) — a partir da edição de 2025</h4>'+
+  '</ul></div><p class="nt-obs">Para a prova de 2026, o Inep informou que a nota técnica do cálculo será publicada posteriormente. <span class="ato">Edital Inep nº 61/2026, item 16.5</span></p></div>';
+  } else { h+=
+  '<h4 class="nt-sec">1. Licenciatura (Pedagogia) — a partir da edição de 2025</h4>'+
   '<div class="nt-block"><ul class="nt-ul">'+
    '<li>O desempenho é medido pela Teoria de Resposta ao Item, combinada com o método Angoff, na escala da Prova Nacional Docente. <span class="ato">NT Inep nº 8/2026, itens 2.6, 3.1 e 4</span></li>'+
    '<li>O conceito é o percentual de concluintes com desempenho no nível "Básico" ou acima. Não depende do resultado de outros cursos. <span class="ato">NT 8/2026, itens 2.3 e 7</span></li>'+
@@ -649,21 +672,31 @@ function comoSaiNota(){
     '<li><span class="nt-cc cc-3">3</span> de 60% a menos de 75%</li>'+
     '<li><span class="nt-cc cc-4">4</span> de 75% a menos de 90%</li>'+
     '<li><span class="nt-cc cc-5">5</span> 90% ou mais</li>'+
-  '</ul></div><p class="nt-obs">O curso precisa de pelo menos 2 participantes com resultado válido. <span class="ato">NT 8/2026, item 5.1</span></p></div>'+
-  '<h4 class="nt-sec">3. CPC, IDD e IGC</h4>'+
+  '</ul></div><p class="nt-obs">O curso precisa de pelo menos 2 participantes com resultado válido. <span class="ato">NT 8/2026, item 5.1</span></p></div>';
+  }
+  h+=
+  '<h4 class="nt-sec">2. CPC, IDD e IGC</h4>'+
   '<div class="nt-block"><ul class="nt-ul">'+
    '<li>O Conceito Enade usa só a prova. A titulação e o regime de trabalho dos professores, o IDD e o questionário do estudante fazem parte de outro indicador, o CPC (Conceito Preliminar de Curso). <span class="ato">NT 11/2026, item 3.1; NT Inep nº 4/2023</span></li>'+
    '<li>Pesos do CPC na metodologia de 2022: nota do Enade 20%; IDD 35%; proporção de doutores 15%; proporção de mestres 7,5%; regime de trabalho 7,5%; organização didático-pedagógica 7,5%; infraestrutura 5%; oportunidades de ampliação da formação 2,5%. <span class="ato">NT 4/2023, Quadro 1</span></li>'+
+   '<li>O IGC é o índice da instituição: a média ponderada das notas contínuas de CPC dos cursos avaliados nos últimos três anos (o CPC mais recente de cada curso), usando o número de matrículas de cada um. Em instituições com mestrado ou doutorado, entram também os conceitos da Capes. As faixas de 1 a 5 são as mesmas do Conceito Enade. <span class="ato">NT Inep nº 5/2023, itens 2.1, 3.1 e 4.1, e Tabela 5</span></li>'+
    '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025; páginas de legislação do Inep consultadas em 27/10/2026</span></li>'+
   '</ul></div>'+
-  '<div class="nt-block nt-fontes"><div class="nt-t">Fontes oficiais <span class="ato">links conferidos em 27/10/2026</span></div><ul class="nt-ul">'+
+  '<div class="nt-block nt-fontes"><div class="nt-t">Fontes oficiais <span class="ato">links conferidos em 27/10/2026</span></div><ul class="nt-ul">';
+  if(!lic){ h+=
     '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_15_calculo_nota_participante_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 15/2026 — nota do participante (bacharelado/CST)</a></li>'+
     '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_11_calculo_conceito_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 11/2026 — Conceito Enade (bacharelado/CST)</a></li>'+
-    '<li><a href="https://www.in.gov.br/web/dou/-/edital-n-61-de-14-de-maio-de-2026-705977430" target="_blank" rel="noopener">Edital 61/2026 (DOU)</a> · <a href="https://www.in.gov.br/web/dou/-/portaria-n-523-de-29-de-setembro-de-2026-737185811" target="_blank" rel="noopener">Portaria 523/2026 (DOU)</a> · <a href="https://www.in.gov.br/web/dou/-/portaria-n-203-de-11-de-abril-de-2025-623762275" target="_blank" rel="noopener">Portaria 203/2025 (DOU)</a></li>'+
-    '<li><a href="https://abmes.org.br/arquivos/legislacoes/nota_tecnica_n_8_conceito_enade_para_os_cursos_de_licenciatura-2026.pdf" target="_blank" rel="noopener">NT 8/2026 — licenciaturas (cópia ABMES)</a></li>'+
-    '<li><a href="https://uespi.br/wp-content/uploads/2024/03/nota_tecnica_n_2_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_conceito_enade.pdf" target="_blank" rel="noopener">NT 2/2023</a> · <a href="https://uespi.br/wp-content/uploads/2024/03/nota_tecnica_n_4_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_cpc.pdf" target="_blank" rel="noopener">NT 4/2023</a> (cópias UESPI)</li>'+
+    '<li><a href="https://www.in.gov.br/web/dou/-/edital-n-61-de-14-de-maio-de-2026-705977430" target="_blank" rel="noopener">Edital 61/2026 (DOU)</a> · <a href="https://www.in.gov.br/web/dou/-/portaria-n-523-de-29-de-setembro-de-2026-737185811" target="_blank" rel="noopener">Portaria 523/2026 (DOU)</a></li>'+
+    '<li><a href="https://uespi.br/wp-content/uploads/2024/03/nota_tecnica_n_2_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_conceito_enade.pdf" target="_blank" rel="noopener">NT 2/2023 — Conceito Enade até 2023 (cópia UESPI)</a></li>';
+  } else { h+=
+    '<li><a href="https://abmes.org.br/arquivos/legislacoes/nota_tecnica_n_8_conceito_enade_para_os_cursos_de_licenciatura-2026.pdf" target="_blank" rel="noopener">NT 8/2026 — licenciaturas (cópia ABMES)</a></li>';
+  }
+  h+=
+    '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2023/nota_tecnica_n_4_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_cpc.pdf" target="_blank" rel="noopener">NT 4/2023 — metodologia do CPC</a> · <a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2023/nota_tecnica_n_5_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_igc.pdf" target="_blank" rel="noopener">NT 5/2023 — metodologia do IGC</a></li>'+
+    '<li><a href="https://www.in.gov.br/web/dou/-/portaria-n-203-de-11-de-abril-de-2025-623762275" target="_blank" rel="noopener">Portaria 203/2025 (DOU) — últimos CPC/IGC (2023)</a></li>'+
   '</ul></div>'+
   '<p class="note">Conteúdo baseado nas regras oficiais do Inep, conferido na análise ENADE da SETREM (27/10/2026). Em caso de dúvida, vale sempre o ato oficial.</p>';
+  return h;
 }
 function renderMain(){
   var c=DATA[curCourse], host=document.getElementById('main'), h='';
