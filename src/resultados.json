@@ -1,0 +1,6 @@
+{
+ "fonte_2022": "https://download.inep.gov.br/educacao_superior/indicadores/resultados/2022/conceito_enade_2022.xlsx",
+ "adm": {"historico": [{"ano": 2022, "conceito": 4, "continuo": "3,060", "inscritos": 29, "participantes": 28}], "proximo": "Conceito Enade 2025: divulgação a partir de 03/11/2026 (Portaria Inep nº 523/2026, art. 6º)."},
+ "dir": {"historico": [{"ano": 2022, "conceito": 3, "continuo": "2,785", "inscritos": 31, "participantes": 29}], "proximo": "Conceito Enade 2025: divulgação a partir de 03/11/2026 (Portaria Inep nº 523/2026, art. 6º)."},
+ "psi": {"historico": [{"ano": 2022, "conceito": 3, "continuo": "1,973", "inscritos": 24, "participantes": 21}], "proximo": "Conceito Enade 2025: divulgação a partir de 03/11/2026 (Portaria Inep nº 523/2026, art. 6º)."}
+}

@@ -249,6 +249,32 @@
   .lei-f{align-self:center;font-size:10px;font-weight:700;letter-spacing:.4px;padding:2px 7px;border-radius:6px;white-space:nowrap}
   .lf-INEP{color:var(--teal);background:var(--st-now-bg)}
   .lf-MEC{color:var(--amber);background:var(--st-soon-bg)}
+
+  /* aba Nota e Conceito */
+  .nt-h{font-size:16px;margin:16px 0 8px}
+  .nt-h2{font-size:17px;margin:24px 0 4px;border-top:1px solid var(--line);padding-top:18px}
+  .nt-intro{font-size:13px;color:var(--muted);margin:0 0 8px}
+  .nt-sec{font-family:var(--font-d);font-size:14.5px;color:var(--accent);margin:16px 0 6px}
+  .nt-block{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .nt-t{font-weight:700;margin-bottom:4px}
+  .nt-ul{margin:4px 0 0;padding-left:18px}
+  .nt-ul li{margin:5px 0;line-height:1.45}
+  .ato{font-size:11.5px;color:var(--muted);font-style:italic}
+  .nt-faixas{margin-top:10px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 13px}
+  .nt-faixas .nt-ul{padding-left:0;list-style:none}
+  .nt-faixas .nt-ul li{margin:5px 0;display:flex;align-items:center;gap:9px}
+  .nt-obs{font-size:13px;color:var(--muted);margin:8px 0 0}
+  .nt-res{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 15px}
+  .nt-res + .nt-res{border-top:1px solid var(--line)}
+  .nt-ano{font-family:var(--font-d);font-weight:700;font-size:16px}
+  .nt-det{font-size:12.5px;color:var(--muted)}
+  .nt-cc{font-weight:800;font-size:12.5px;padding:2px 10px;border-radius:999px;white-space:nowrap;min-width:20px;text-align:center}
+  .cc-1{color:var(--st-urgent);background:var(--st-urgent-bg)}
+  .cc-2{color:var(--st-soon);background:var(--st-soon-bg)}
+  .cc-3{color:var(--gold);background:var(--st-soon-bg)}
+  .cc-4{color:var(--green);background:var(--st-now-bg)}
+  .cc-5{color:var(--teal);background:var(--st-now-bg)}
+  .nt-fontes a{word-break:break-word}
   @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}}
 </style>
 
@@ -467,10 +493,12 @@ var PORT=/*__PORT__*/;
 var EDITAIS=/*__EDITAIS__*/;
 /* lista completa de atos ENADE/PND reunida pelo robô (INEP + mecnormas/MEC) */
 var ATOS=/*__ATOS__*/;
+/* conceitos ENADE por curso — dados públicos (integração com a sessão "Cálculo ENADE 2025") */
+var RESULTADOS=/*__RESULTADOS__*/;
 
 /* abas — "Procuradoria" só entra quando destravada (código) */
 function tabList(){
-  var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['editais','Editais']];
+  var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['nota','Nota e Conceito'],['editais','Editais']];
   if(isPI) t.push(['pi','Procuradoria']);
   t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['leg','Legislação'],['links','Links oficiais']);
   return t;
@@ -566,11 +594,80 @@ function checklist(arr,titulo,cx,piFlag,hintTxt){
     '<div class="card"><ul class="ck'+(piFlag?' pi':'')+'">'+li+'</ul></div>';
 }
 
+function renderNota(){
+  var c=DATA[curCourse], r=(typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
+  var anoSel=(c.ano||'').replace(/\s*\(.*\)/,'');
+  var h='<div class="panel-head"><h2>Nota e Conceito</h2><span class="cx">'+esc(c.nome+' · '+c.grau)+'</span></div>';
+  h+='<h3 class="nt-h">Conceito Enade — '+esc(c.nome)+'</h3>';
+  if(r && r.historico && r.historico.length){
+    h+='<div class="card">'+r.historico.map(function(x){
+      return '<div class="nt-res"><span class="nt-ano tnum">'+esc(String(x.ano))+'</span>'+
+        '<span class="nt-cc cc-'+esc(String(x.conceito))+'">Conceito '+esc(String(x.conceito))+'</span>'+
+        '<span class="nt-det">nota contínua '+esc(String(x.continuo))+' · '+esc(String(x.participantes))+' de '+esc(String(x.inscritos))+' participantes</span></div>';
+    }).join('')+'</div>';
+    if(r.proximo) h+='<p class="note">'+esc(r.proximo)+'</p>';
+    if(RESULTADOS.fonte_2022) h+='<p class="note">Fonte: Inep — Conceito Enade 2022 (planilha oficial de resultados). <a href="'+esc(RESULTADOS.fonte_2022)+'" target="_blank" rel="noopener">abrir planilha ›</a></p>';
+  } else {
+    h+=waitBox('O último Conceito Enade de '+c.nome+' será incluído aqui. '+(c.wait?('A próxima avaliação deste curso é em '+anoSel+'.'):'O resultado é divulgado pelo INEP após a prova; assim que sair, aparece aqui.'));
+  }
+  h+=comoSaiNota();
+  return h;
+}
+function comoSaiNota(){
+  return '<h3 class="nt-h2">Como sai a nota do ENADE</h3>'+
+  '<p class="nt-intro">Resumo das regras oficiais do Inep — cada item indica o ato de origem.</p>'+
+  '<h4 class="nt-sec">1. Bacharelados — a partir da edição de 2025</h4>'+
+  '<div class="nt-block"><div class="nt-t">Nota do aluno (Nota Geral, de 0 a 100)</div><ul class="nt-ul">'+
+   '<li>Nota Geral = 0,8 × nota das questões objetivas (0 a 100) + nota da questão discursiva (0 a 20). <span class="ato">NT Inep nº 15/2026, item 7.4</span></li>'+
+   '<li>As questões objetivas de Formação Geral e de Componente Específico formam uma nota só. <span class="ato">NT 15/2026, item 4.1</span></li>'+
+   '<li>Na prova de 2025, cada aluno respondeu 45 questões objetivas, de um total de 75 da área distribuídas em cadernos diferentes, e 1 questão discursiva. O Inep ajusta a nota objetiva pela dificuldade de cada caderno. <span class="ato">NT 15/2026, itens 3.2 e 6</span></li>'+
+   '<li>Peso da discursiva: as objetivas somam até 80 pontos, cerca de 1,8 ponto por questão, e a discursiva vale até 20 pontos sozinha. Deixar a discursiva em branco equivale a errar cerca de 11 questões objetivas. <span class="ato">conta a partir da NT 15/2026, item 7.4; valores aproximados</span></li>'+
+   '<li>Como era até 2023: duas notas separadas, Formação Geral (peso 25%) e Componente Específico (peso 75%). <span class="ato">NT Inep nº 2/2023, item 7.1</span></li>'+
+  '</ul></div>'+
+  '<div class="nt-block"><div class="nt-t">Conceito Enade do curso (1 a 5)</div><ul class="nt-ul">'+
+   '<li>A nota do curso é a média da Nota Geral dos concluintes que fizeram a prova com resultado válido. Quem faltou não entra na média. <span class="ato">NT Inep nº 11/2026, itens 5 e 6.3.1</span></li>'+
+   '<li>O curso precisa de pelo menos 2 participantes com resultado válido. Se não tiver, fica "Sem Conceito". <span class="ato">NT 11/2026, item 4.1</span></li>'+
+   '<li>A média do curso é comparada com a dos demais cursos da mesma área de avaliação no Brasil e transformada numa nota contínua de 0 a 5. <span class="ato">NT 11/2026, itens 2.3 e 6</span></li>'+
+  '</ul><div class="nt-faixas"><div class="nt-t">Faixas <span class="ato">NT 11/2026, item 7.1</span></div><ul class="nt-ul">'+
+    '<li><span class="nt-cc cc-1">1</span> de 0 a menos de 0,945</li>'+
+    '<li><span class="nt-cc cc-2">2</span> de 0,945 a menos de 1,945</li>'+
+    '<li><span class="nt-cc cc-3">3</span> de 1,945 a menos de 2,945</li>'+
+    '<li><span class="nt-cc cc-4">4</span> de 2,945 a menos de 3,945</li>'+
+    '<li><span class="nt-cc cc-5">5</span> de 3,945 a 5</li>'+
+  '</ul></div><p class="nt-obs">Para a prova de 2026, o Inep informou que a nota técnica do cálculo será publicada posteriormente. <span class="ato">Edital Inep nº 61/2026, item 16.5</span></p></div>'+
+  '<h4 class="nt-sec">2. Licenciaturas (Pedagogia) — a partir da edição de 2025</h4>'+
+  '<div class="nt-block"><ul class="nt-ul">'+
+   '<li>O desempenho é medido pela Teoria de Resposta ao Item, combinada com o método Angoff, na escala da Prova Nacional Docente. <span class="ato">NT Inep nº 8/2026, itens 2.6, 3.1 e 4</span></li>'+
+   '<li>O conceito é o percentual de concluintes com desempenho no nível "Básico" ou acima. Não depende do resultado de outros cursos. <span class="ato">NT 8/2026, itens 2.3 e 7</span></li>'+
+  '</ul><div class="nt-faixas"><div class="nt-t">Faixas <span class="ato">NT 8/2026, Tabela 1</span></div><ul class="nt-ul">'+
+    '<li><span class="nt-cc cc-1">1</span> menos de 40%</li>'+
+    '<li><span class="nt-cc cc-2">2</span> de 40% a menos de 60%</li>'+
+    '<li><span class="nt-cc cc-3">3</span> de 60% a menos de 75%</li>'+
+    '<li><span class="nt-cc cc-4">4</span> de 75% a menos de 90%</li>'+
+    '<li><span class="nt-cc cc-5">5</span> 90% ou mais</li>'+
+  '</ul></div><p class="nt-obs">O curso precisa de pelo menos 2 participantes com resultado válido. <span class="ato">NT 8/2026, item 5.1</span></p></div>'+
+  '<h4 class="nt-sec">3. CPC, IDD e IGC</h4>'+
+  '<div class="nt-block"><ul class="nt-ul">'+
+   '<li>O Conceito Enade usa só a prova. A titulação e o regime de trabalho dos professores, o IDD e o questionário do estudante fazem parte de outro indicador, o CPC (Conceito Preliminar de Curso). <span class="ato">NT 11/2026, item 3.1; NT Inep nº 4/2023</span></li>'+
+   '<li>Pesos do CPC na metodologia de 2022: nota do Enade 20%; IDD 35%; proporção de doutores 15%; proporção de mestres 7,5%; regime de trabalho 7,5%; organização didático-pedagógica 7,5%; infraestrutura 5%; oportunidades de ampliação da formação 2,5%. <span class="ato">NT 4/2023, Quadro 1</span></li>'+
+   '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025</span></li>'+
+  '</ul></div>'+
+  '<div class="nt-block nt-fontes"><div class="nt-t">Fontes oficiais <span class="ato">links conferidos em 27/10/2026</span></div><ul class="nt-ul">'+
+    '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_15_calculo_nota_participante_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 15/2026 — nota do participante (bacharelado/CST)</a></li>'+
+    '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_11_calculo_conceito_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 11/2026 — Conceito Enade (bacharelado/CST)</a></li>'+
+    '<li><a href="https://www.in.gov.br/web/dou/-/edital-n-61-de-14-de-maio-de-2026-705977430" target="_blank" rel="noopener">Edital 61/2026 (DOU)</a> · <a href="https://www.in.gov.br/web/dou/-/portaria-n-523-de-29-de-setembro-de-2026-737185811" target="_blank" rel="noopener">Portaria 523/2026 (DOU)</a> · <a href="https://www.in.gov.br/web/dou/-/portaria-n-203-de-11-de-abril-de-2025-623762275" target="_blank" rel="noopener">Portaria 203/2025 (DOU)</a></li>'+
+    '<li><a href="https://abmes.org.br/arquivos/legislacoes/nota_tecnica_n_8_conceito_enade_para_os_cursos_de_licenciatura-2026.pdf" target="_blank" rel="noopener">NT 8/2026 — licenciaturas (cópia ABMES)</a></li>'+
+    '<li><a href="https://uespi.br/wp-content/uploads/2024/03/nota_tecnica_n_2_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_conceito_enade.pdf" target="_blank" rel="noopener">NT 2/2023</a> · <a href="https://uespi.br/wp-content/uploads/2024/03/nota_tecnica_n_4_2023_cei_cggi_daes_descricao_da_metodologia_de_calculo_do_cpc.pdf" target="_blank" rel="noopener">NT 4/2023</a> (cópias UESPI)</li>'+
+  '</ul></div>'+
+  '<p class="note">Conteúdo baseado nas regras oficiais do Inep, conferido na análise ENADE da SETREM (27/10/2026). Em caso de dúvida, vale sempre o ato oficial.</p>';
+}
 function renderMain(){
   var c=DATA[curCourse], host=document.getElementById('main'), h='';
   var cx=c.nome+' · '+c.grau+(c.ano?(' · '+c.ano):'');
   if(curTab==='cal'){
     h=renderCal();
+  } else if(curTab==='nota'){
+    h=renderNota();
   } else if(curTab==='prazos'){
     if(c.wait){ h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O cronograma de '+c.nome+' sai com o edital da próxima avaliação deste curso no ENADE. Ainda não publicado.'); }
     else{

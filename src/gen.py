@@ -70,11 +70,13 @@ if os.path.exists("novidades_auto.json"):
         pass
 
 ATOS = json.load(io.open("atos.json", encoding="utf-8")) if os.path.exists("atos.json") else []
+RESULTADOS = json.load(io.open("resultados.json", encoding="utf-8")) if os.path.exists("resultados.json") else {}
 
 tpl = io.open("template.html", encoding="utf-8").read()
 html = tpl.replace("/*__PORT__*/", json.dumps(PORT, ensure_ascii=False)) \
           .replace("/*__EDITAIS__*/", json.dumps(EDITAIS, ensure_ascii=False)) \
           .replace("/*__NOVI__*/", json.dumps(NOVI, ensure_ascii=False)) \
-          .replace("/*__ATOS__*/", json.dumps(ATOS, ensure_ascii=False))
+          .replace("/*__ATOS__*/", json.dumps(ATOS, ensure_ascii=False)) \
+          .replace("/*__RESULTADOS__*/", json.dumps(RESULTADOS, ensure_ascii=False))
 io.open("../index.html", "w", encoding="utf-8", newline="\n").write(html)
 print("OK -> ../index.html", len(html), "bytes")
