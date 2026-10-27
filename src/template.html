@@ -276,7 +276,15 @@
   .cc-5{color:var(--teal);background:var(--st-now-bg)}
   .nt-fontes a{word-break:break-word}
   .nt-fonte{font-size:11.5px;color:var(--teal)}
-  @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}}
+  .nt-tbl{width:100%;border-collapse:collapse;margin:6px 0 2px;font-size:13px}
+  .nt-tbl th,.nt-tbl td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+  .nt-tbl thead th{background:var(--surface2);font-weight:700;font-size:11.5px;color:var(--muted)}
+  .nt-tbl td.n,.nt-tbl th.n{text-align:right;white-space:nowrap;font-family:var(--font-d)}
+  .nt-tbl td.dim{font-weight:700;white-space:nowrap}
+  .nt-tbl .sub{color:var(--muted);font-size:12px;white-space:nowrap}
+  .nt-proj{font-size:12px;color:var(--amber);background:var(--st-soon-bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:0 0 8px}
+  .nt-margl{font-size:13px;margin:6px 0 2px}
+  @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}.nt-tbl{font-size:12px}.nt-tbl th,.nt-tbl td{padding:5px 7px}}
 </style>
 
 <header class="top">
@@ -286,7 +294,7 @@
       <div class="sub">Faculdade Três de Maio — SETREM · ENADE e PND dos 7 cursos de graduação</div>
     </div>
     <div class="spacer"></div>
-    <div class="updated tnum">Conteúdo revisado em <b id="upd">02/10/2026</b></div>
+    <div class="updated tnum">Conteúdo revisado em <b id="upd">27/10/2026</b></div>
     <button class="tbtn" id="theme" type="button">Tema</button>
   </div>
 </header>
@@ -595,6 +603,41 @@ function checklist(arr,titulo,cx,piFlag,hintTxt){
     '<div class="card"><ul class="ck'+(piFlag?' pi':'')+'">'+li+'</ul></div>';
 }
 
+function margemTbl(mg,lic){
+  var h='';
+  if(mg.rotulo) h+='<p class="nt-proj">'+esc(mg.rotulo)+'</p>';
+  if(lic){
+    if(mg.cair && mg.cair.alunos!=null) h+='<div class="nt-margl">Com <b>'+esc(String(mg.cair.alunos))+'</b> concluinte(s) a menos no nível Básico ou acima, o conceito cairia para <b>'+esc(String(mg.cair.para))+'</b>.</div>';
+    if(mg.subir && mg.subir.alunos!=null) h+='<div class="nt-margl">Com <b>'+esc(String(mg.subir.alunos))+'</b> concluinte(s) a mais no nível Básico ou acima, o conceito subiria para <b>'+esc(String(mg.subir.para))+'</b>.</div>';
+  } else {
+    h+='<table class="nt-tbl"><thead><tr><th>Movimento</th><th class="n">Na nota contínua</th><th>Na média do curso*</th></tr></thead><tbody>';
+    if(mg.subir) h+='<tr><td>Subir ao conceito '+esc(String(mg.subir.para))+'</td><td class="n">'+esc(String(mg.subir.nota))+'</td><td class="sub">≈ '+esc(String(mg.subir.pontos))+' pontos</td></tr>';
+    if(mg.cair) h+='<tr><td>Cair ao conceito '+esc(String(mg.cair.para))+'</td><td class="n">'+esc(String(mg.cair.nota))+'</td><td class="sub">≈ '+esc(String(mg.cair.pontos))+' pontos</td></tr>';
+    h+='</tbody></table><p class="nt-obs">* distância aproximada na média de Componente Específico do curso (método até 2023).</p>';
+  }
+  return h;
+}
+function margensPI(){
+  var ordem=['adm','dir','psi','agro','enf','comp','ped'], rows='', rot='';
+  ordem.forEach(function(k){
+    var dd=DATA[k], rr=(typeof RESULTADOS!=='undefined'&&RESULTADOS[k])||null;
+    var rec=rr&&rr.historico&&rr.historico.length?rr.historico[0]:null, mg=rec&&rec.margem;
+    if(!dd||!mg) return;
+    if(mg.rotulo && !rot) rot=mg.rotulo;
+    function cell(m){
+      if(!m) return '—';
+      if(m.alunos!=null) return 'conceito '+esc(String(m.para))+' · '+esc(String(m.alunos))+' concluinte(s)';
+      return 'conceito '+esc(String(m.para))+' · '+esc(String(m.nota))+' <span class="sub">(≈ '+esc(String(m.pontos))+' pt)</span>';
+    }
+    rows+='<tr><td class="dim">'+esc(dd.nome)+'</td>'+
+          '<td class="n"><span class="nt-cc cc-'+esc(String(rec.conceito))+'">'+esc(String(rec.conceito))+'</span> <span class="sub">'+esc(String(rec.ano))+'</span></td>'+
+          '<td>'+cell(mg.subir)+'</td><td>'+cell(mg.cair)+'</td></tr>';
+  });
+  return '<div class="panel-head"><h2>Margens de conceito — todos os cursos</h2><span class="cx">visão institucional</span></div>'+
+    (rot?'<p class="nt-proj">'+esc(rot)+'</p>':'')+
+    '<div class="card" style="padding:8px 10px"><table class="nt-tbl"><thead><tr><th>Curso</th><th class="n">Conceito</th><th>Para subir</th><th>Para cair</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<p class="note">Margens em projeção da SETREM a partir de dados públicos do Inep. Cada coordenador vê a do seu curso na aba “Nota e Conceito”.</p>';
+}
 function renderNota(){
   var c=DATA[curCourse], r=(typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
   var anoSel=(c.ano||'').replace(/\s*\(.*\)/,'');
@@ -613,6 +656,14 @@ function renderNota(){
     if(r.proximo) h+='<p class="note">'+esc(r.proximo)+'</p>';
   } else {
     h+=waitBox('O último Conceito Enade de '+c.nome+' será incluído aqui. '+(c.wait?('A próxima avaliação deste curso é em '+anoSel+'.'):'O resultado é divulgado pelo INEP após a prova; assim que sair, aparece aqui.'));
+  }
+  var rec=(r&&r.historico&&r.historico.length)?r.historico[0]:null;
+  var mg=rec&&rec.margem;
+  if(mg){
+    var lic=/licenc/i.test(c.grau);
+    h+='<h3 class="nt-h">Margem do conceito — quanto falta para subir ou cair</h3>';
+    h+='<div class="nt-block"><div class="nt-t">No Conceito Enade '+esc(String(rec.ano))+' — conceito '+esc(String(rec.conceito))+'</div>'+
+       margemTbl(mg,lic)+'</div>';
   }
   var cp=(r&&r.cpc)||null;
   if(cp){
@@ -643,11 +694,15 @@ function comoSaiNota(c){
   '<p class="nt-intro">Resumo das regras oficiais do Inep — cada item indica o ato de origem.</p>';
   if(!lic){ h+=
   '<h4 class="nt-sec">1. Bacharelado — a partir da edição de 2025</h4>'+
-  '<div class="nt-block"><div class="nt-t">Nota do aluno (Nota Geral, de 0 a 100)</div><ul class="nt-ul">'+
-   '<li>Nota Geral = 0,8 × nota das questões objetivas (0 a 100) + nota da questão discursiva (0 a 20). <span class="ato">NT Inep nº 15/2026, item 7.4</span></li>'+
-   '<li>As questões objetivas de Formação Geral e de Componente Específico formam uma nota só. <span class="ato">NT 15/2026, item 4.1</span></li>'+
-   '<li>Na prova de 2025, cada aluno respondeu 45 questões objetivas, de um total de 75 da área distribuídas em cadernos diferentes, e 1 questão discursiva. O Inep ajusta a nota objetiva pela dificuldade de cada caderno. <span class="ato">NT 15/2026, itens 3.2 e 6</span></li>'+
-   '<li>Peso da discursiva: as objetivas somam até 80 pontos, cerca de 1,8 ponto por questão, e a discursiva vale até 20 pontos sozinha. Deixar a discursiva em branco equivale a errar cerca de 11 questões objetivas. <span class="ato">conta a partir da NT 15/2026, item 7.4; valores aproximados</span></li>'+
+  '<div class="nt-block"><div class="nt-t">A prova de 2025 (bacharelado)</div>'+
+  '<table class="nt-tbl"><thead><tr><th>Parte da prova</th><th class="n">Questões</th><th class="n">Vale</th><th>Cada questão vale</th></tr></thead><tbody>'+
+   '<tr><td>Objetivas (formação geral + específico)</td><td class="n">45</td><td class="n">80 pontos</td><td>≈ 1,8 ponto</td></tr>'+
+   '<tr><td>Discursiva</td><td class="n">1</td><td class="n">20 pontos</td><td>20 pontos ≈ 11 objetivas</td></tr>'+
+  '</tbody></table>'+
+  '<p class="nt-obs">Na prova de 2025; valores aproximados. <span class="ato">NT Inep nº 15/2026, itens 3.2 e 7.4</span></p>'+
+  '<ul class="nt-ul">'+
+   '<li>Nota Geral (0 a 100) = 0,8 × nota das objetivas (0 a 100) + nota da discursiva (0 a 20); as objetivas de Formação Geral e Componente Específico formam uma nota só. <span class="ato">NT 15/2026, itens 4.1 e 7.4</span></li>'+
+   '<li>Cada aluno respondeu 45 das 75 questões objetivas da área, em cadernos diferentes, e 1 discursiva; o Inep ajusta a nota objetiva pela dificuldade de cada caderno. Deixar a discursiva em branco equivale a errar cerca de 11 objetivas. <span class="ato">NT 15/2026, itens 3.2 e 6</span></li>'+
    '<li>Como era até 2023: duas notas separadas, Formação Geral (peso 25%) e Componente Específico (peso 75%). <span class="ato">NT Inep nº 2/2023, item 7.1</span></li>'+
   '</ul></div>'+
   '<div class="nt-block"><div class="nt-t">Conceito Enade do curso (1 a 5)</div><ul class="nt-ul">'+
@@ -664,9 +719,17 @@ function comoSaiNota(c){
   } else { h+=
   '<h4 class="nt-sec">1. Licenciatura (Pedagogia) — a partir da edição de 2025</h4>'+
   '<div class="nt-block"><ul class="nt-ul">'+
-   '<li>O desempenho é medido pela Teoria de Resposta ao Item, combinada com o método Angoff, na escala da Prova Nacional Docente. <span class="ato">NT Inep nº 8/2026, itens 2.6, 3.1 e 4</span></li>'+
-   '<li>O conceito é o percentual de concluintes com desempenho no nível "Básico" ou acima. Não depende do resultado de outros cursos. <span class="ato">NT 8/2026, itens 2.3 e 7</span></li>'+
-  '</ul><div class="nt-faixas"><div class="nt-t">Faixas <span class="ato">NT 8/2026, Tabela 1</span></div><ul class="nt-ul">'+
+   '<li>O desempenho é medido por Teoria de Resposta ao Item (TRI), combinada com o método Angoff, na escala da Prova Nacional Docente — nota de 0 a 100. <span class="ato">NT Inep nº 8/2026, itens 2.6, 3.1 e 4; escala de 0 a 100: Inep — resultado da PND, 13/12/2025</span></li>'+
+   '<li>O Inep definiu os padrões de desempenho em encontros técnicos, com apoio de especialistas, para 17 áreas de licenciatura. <span class="ato">Inep — resultado da PND, 13/12/2025</span></li>'+
+   '<li>O conceito do curso é o percentual de concluintes no nível "Básico" ou acima. Não depende do resultado de outros cursos. <span class="ato">NT 8/2026, itens 2.3 e 7</span></li>'+
+  '</ul>'+
+  '<div class="nt-faixas"><div class="nt-t">Nível de cada concluinte (nota 0 a 100) <span class="ato">Inep — resultado da PND, 13/12/2025</span></div>'+
+   '<table class="nt-tbl"><tbody>'+
+    '<tr><td>Básico</td><td class="n">50 a 69 pontos</td></tr>'+
+    '<tr><td>Adequado</td><td class="n">70 pontos ou mais</td></tr>'+
+   '</tbody></table>'+
+   '<p class="nt-obs" style="margin:6px 0 0">Fica no nível Básico ou acima quem tira 50 pontos ou mais.</p></div>'+
+  '<div class="nt-faixas"><div class="nt-t">Conceito do curso — % de concluintes no Básico ou acima <span class="ato">NT 8/2026, Tabela 1</span></div><ul class="nt-ul">'+
     '<li><span class="nt-cc cc-1">1</span> menos de 40%</li>'+
     '<li><span class="nt-cc cc-2">2</span> de 40% a menos de 60%</li>'+
     '<li><span class="nt-cc cc-3">3</span> de 60% a menos de 75%</li>'+
@@ -676,12 +739,20 @@ function comoSaiNota(c){
   }
   h+=
   '<h4 class="nt-sec">2. CPC, IDD e IGC</h4>'+
-  '<div class="nt-block"><ul class="nt-ul">'+
-   '<li>O Conceito Enade usa só a prova. A titulação e o regime de trabalho dos professores, o IDD e o questionário do estudante fazem parte de outro indicador, o CPC (Conceito Preliminar de Curso). <span class="ato">NT 11/2026, item 3.1; NT Inep nº 4/2023</span></li>'+
-   '<li>Pesos do CPC na metodologia de 2022: nota do Enade 20%; IDD 35%; proporção de doutores 15%; proporção de mestres 7,5%; regime de trabalho 7,5%; organização didático-pedagógica 7,5%; infraestrutura 5%; oportunidades de ampliação da formação 2,5%. <span class="ato">NT 4/2023, Quadro 1</span></li>'+
-   '<li>O IGC é o índice da instituição: a média ponderada das notas contínuas de CPC dos cursos avaliados nos últimos três anos (o CPC mais recente de cada curso), usando o número de matrículas de cada um. Em instituições com mestrado ou doutorado, entram também os conceitos da Capes. As faixas de 1 a 5 são as mesmas do Conceito Enade. <span class="ato">NT Inep nº 5/2023, itens 2.1, 3.1 e 4.1, e Tabela 5</span></li>'+
-   '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025; páginas de legislação do Inep consultadas em 27/10/2026</span></li>'+
-  '</ul></div>'+
+  '<div class="nt-block">'+
+   '<p style="margin:2px 0 8px;line-height:1.45">O Conceito Enade usa só a prova. A titulação e o regime de trabalho dos professores, o IDD e o questionário do estudante fazem parte de outro indicador, o CPC (Conceito Preliminar de Curso). <span class="ato">NT 11/2026, item 3.1; NT Inep nº 4/2023</span></p>'+
+   '<div class="nt-t">O que compõe o CPC (metodologia de 2022)</div>'+
+   '<table class="nt-tbl"><thead><tr><th>Dimensão</th><th class="n">Peso</th><th>Componentes</th></tr></thead><tbody>'+
+    '<tr><td class="dim">Desempenho dos estudantes</td><td class="n">20%</td><td>Nota do Enade</td></tr>'+
+    '<tr><td class="dim">Valor agregado pelo processo formativo</td><td class="n">35%</td><td>IDD (desempenho observado × esperado pelo Enem)</td></tr>'+
+    '<tr><td class="dim">Corpo docente</td><td class="n">30%</td><td>Doutores 15% + mestres 7,5% + regime de trabalho 7,5%</td></tr>'+
+    '<tr><td class="dim">Percepção discente</td><td class="n">15%</td><td>Org. didático-pedagógica 7,5% + infraestrutura 5% + oportunidades 2,5%</td></tr>'+
+   '</tbody></table>'+
+   '<p class="nt-obs">A percepção discente vem do questionário do estudante. <span class="ato">NT 4/2023, Quadro 1</span></p>'+
+   '<ul class="nt-ul">'+
+    '<li>O IGC é o índice da instituição: a média ponderada das notas contínuas de CPC dos cursos avaliados nos últimos três anos (o CPC mais recente de cada curso), usando o número de matrículas de cada um. Em instituições com mestrado ou doutorado, entram também os conceitos da Capes. As faixas de 1 a 5 são as mesmas do Conceito Enade. <span class="ato">NT Inep nº 5/2023, itens 2.1, 3.1 e 4.1, e Tabela 5</span></li>'+
+    '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025; páginas de legislação do Inep consultadas em 27/10/2026</span></li>'+
+   '</ul></div>'+
   '<div class="nt-block nt-fontes"><div class="nt-t">Fontes oficiais <span class="ato">links conferidos em 27/10/2026</span></div><ul class="nt-ul">';
   if(!lic){ h+=
     '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_15_calculo_nota_participante_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 15/2026 — nota do participante (bacharelado/CST)</a></li>'+
@@ -750,10 +821,11 @@ function renderMain(){
     var hint = curTab==='pi'?'A Procuradoria Institucional inicia e acompanha o processo <b>antes</b> do coordenador e dos estudantes (legislação, habilitação, acessos e declarações da IES).':
                (curTab==='coord'?'Depois da etapa institucional, o coordenador cuida das inscrições, da Avaliação da Prática (quando houver) e do acompanhamento dos seus estudantes.':
                'Por fim, o estudante cumpre o que é dele: questionário, prova e, se precisar, recursos e dispensa.');
-    if(c.wait){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Será preenchido quando sair o edital de '+c.nome+'.'); }
-    else if(!arr || !arr.length){ h='<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Nada a listar neste momento.'); }
+    var pre = (curTab==='pi') ? margensPI() : '';
+    if(c.wait){ h=pre+'<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Será preenchido quando sair o edital de '+c.nome+'.'); }
+    else if(!arr || !arr.length){ h=pre+'<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Nada a listar neste momento.'); }
     else {
-      h=checklist(arr,titulo,cx,curTab==='pi',hint);
+      h=pre+checklist(arr,titulo,cx,curTab==='pi',hint);
       if(curTab==='pi') h+='<p class="note">Esta aba só aparece com o seu acesso (código) — os coordenadores não a veem. Lista proposta com base no fluxo oficial do ENADE/PND; ajuste conforme a rotina da SETREM (é só me avisar).</p>';
     }
   } else if(curTab==='novi'){
