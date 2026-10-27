@@ -275,6 +275,7 @@
   .cc-4{color:var(--green);background:var(--st-now-bg)}
   .cc-5{color:var(--teal);background:var(--st-now-bg)}
   .nt-fontes a{word-break:break-word}
+  .nt-fonte{font-size:11.5px;color:var(--teal)}
   @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}}
 </style>
 
@@ -603,10 +604,10 @@ function renderNota(){
     h+='<div class="card">'+r.historico.map(function(x){
       return '<div class="nt-res"><span class="nt-ano tnum">'+esc(String(x.ano))+'</span>'+
         '<span class="nt-cc cc-'+esc(String(x.conceito))+'">Conceito '+esc(String(x.conceito))+'</span>'+
-        '<span class="nt-det">nota contínua '+esc(String(x.continuo))+' · '+esc(String(x.participantes))+' de '+esc(String(x.inscritos))+' participantes</span></div>';
+        '<span class="nt-det">nota contínua '+esc(String(x.continuo))+' · '+esc(String(x.participantes))+' participantes de '+esc(String(x.inscritos))+' inscritos'+
+        (x.fonte?'<br><a class="nt-fonte" href="'+esc(x.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(x.fonte)+' ›</a>':'')+'</span></div>';
     }).join('')+'</div>';
     if(r.proximo) h+='<p class="note">'+esc(r.proximo)+'</p>';
-    if(RESULTADOS.fonte_2022) h+='<p class="note">Fonte: Inep — Conceito Enade 2022 (planilha oficial de resultados). <a href="'+esc(RESULTADOS.fonte_2022)+'" target="_blank" rel="noopener">abrir planilha ›</a></p>';
   } else {
     h+=waitBox('O último Conceito Enade de '+c.nome+' será incluído aqui. '+(c.wait?('A próxima avaliação deste curso é em '+anoSel+'.'):'O resultado é divulgado pelo INEP após a prova; assim que sair, aparece aqui.'));
   }
@@ -650,7 +651,7 @@ function comoSaiNota(){
   '<div class="nt-block"><ul class="nt-ul">'+
    '<li>O Conceito Enade usa só a prova. A titulação e o regime de trabalho dos professores, o IDD e o questionário do estudante fazem parte de outro indicador, o CPC (Conceito Preliminar de Curso). <span class="ato">NT 11/2026, item 3.1; NT Inep nº 4/2023</span></li>'+
    '<li>Pesos do CPC na metodologia de 2022: nota do Enade 20%; IDD 35%; proporção de doutores 15%; proporção de mestres 7,5%; regime de trabalho 7,5%; organização didático-pedagógica 7,5%; infraestrutura 5%; oportunidades de ampliação da formação 2,5%. <span class="ato">NT 4/2023, Quadro 1</span></li>'+
-   '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025</span></li>'+
+   '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025; páginas de legislação do Inep consultadas em 27/10/2026</span></li>'+
   '</ul></div>'+
   '<div class="nt-block nt-fontes"><div class="nt-t">Fontes oficiais <span class="ato">links conferidos em 27/10/2026</span></div><ul class="nt-ul">'+
     '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_15_calculo_nota_participante_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 15/2026 — nota do participante (bacharelado/CST)</a></li>'+
