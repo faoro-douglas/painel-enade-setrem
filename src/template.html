@@ -602,9 +602,12 @@ function renderNota(){
   h+='<h3 class="nt-h">Conceito Enade — '+esc(c.nome)+'</h3>';
   if(r && r.historico && r.historico.length){
     h+='<div class="card">'+r.historico.map(function(x){
+      var det = x.percentual
+        ? esc(String(x.percentual))+' dos concluintes no nível Básico ou acima ('+esc(String(x.no_basico_ou_acima))+' de '+esc(String(x.participantes))+' participantes)'
+        : 'nota contínua '+esc(String(x.continuo))+' · '+esc(String(x.participantes))+' participantes de '+esc(String(x.inscritos))+' inscritos';
       return '<div class="nt-res"><span class="nt-ano tnum">'+esc(String(x.ano))+'</span>'+
         '<span class="nt-cc cc-'+esc(String(x.conceito))+'">Conceito '+esc(String(x.conceito))+'</span>'+
-        '<span class="nt-det">nota contínua '+esc(String(x.continuo))+' · '+esc(String(x.participantes))+' participantes de '+esc(String(x.inscritos))+' inscritos'+
+        '<span class="nt-det">'+det+
         (x.fonte?'<br><a class="nt-fonte" href="'+esc(x.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(x.fonte)+' ›</a>':'')+'</span></div>';
     }).join('')+'</div>';
     if(r.proximo) h+='<p class="note">'+esc(r.proximo)+'</p>';
