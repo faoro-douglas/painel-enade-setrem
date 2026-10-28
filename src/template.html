@@ -284,6 +284,12 @@
   .nt-tbl .sub{color:var(--muted);font-size:12px;white-space:nowrap}
   .nt-proj{font-size:12px;color:var(--amber);background:var(--st-soon-bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:0 0 8px}
   .nt-margl{font-size:13px;margin:6px 0 2px}
+  .mg-est{font-size:14px;margin:0 0 10px}
+  .mg-lab{display:block;font-size:11.5px;color:var(--muted);margin-bottom:1px}
+  .mg-row{padding:9px 12px;border-radius:8px;background:var(--surface2);margin:7px 0;font-size:13.5px;border-left:3px solid var(--line)}
+  .mg-u{border-left-color:var(--green)}
+  .mg-d{border-left-color:var(--st-urgent)}
+  .mg-sub{color:var(--muted)}
   @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}.nt-tbl{font-size:12px}.nt-tbl th,.nt-tbl td{padding:5px 7px}}
 </style>
 
@@ -603,18 +609,21 @@ function checklist(arr,titulo,cx,piFlag,hintTxt){
     '<div class="card"><ul class="ck'+(piFlag?' pi':'')+'">'+li+'</ul></div>';
 }
 
-function margemTbl(mg,lic){
+function margemTbl(mg,lic,rec){
+  var CUT={2:'0,945',3:'1,945',4:'2,945',5:'3,945'};
   var h='';
-  if(mg.rotulo) h+='<p class="nt-proj">'+esc(mg.rotulo)+'</p>';
   if(lic){
-    if(mg.cair && mg.cair.alunos!=null) h+='<div class="nt-margl">Com <b>'+esc(String(mg.cair.alunos))+'</b> concluinte(s) a menos no nível Básico ou acima, o conceito cairia para <b>'+esc(String(mg.cair.para))+'</b>.</div>';
-    if(mg.subir && mg.subir.alunos!=null) h+='<div class="nt-margl">Com <b>'+esc(String(mg.subir.alunos))+'</b> concluinte(s) a mais no nível Básico ou acima, o conceito subiria para <b>'+esc(String(mg.subir.para))+'</b>.</div>';
+    h+='<div class="mg-est"><span class="mg-lab">Estado atual</span><b>'+esc(String(rec.percentual||''))+' no nível Básico ou acima</b> ('+esc(String(rec.no_basico_ou_acima))+' de '+esc(String(rec.participantes))+') · conceito '+esc(String(rec.conceito))+'</div>';
+    if(mg.subir && mg.subir.alunos!=null) h+='<div class="mg-row mg-u"><span class="mg-lab">Para melhorar</span>subir ao conceito '+esc(String(mg.subir.para))+': '+esc(String(mg.subir.alunos))+' concluinte(s) a mais no Básico ou acima</div>';
+    else if(parseInt(rec.conceito,10)>=5) h+='<div class="mg-row mg-u"><span class="mg-lab">Para melhorar</span>já é o conceito máximo (5)</div>';
+    if(mg.cair && mg.cair.alunos!=null) h+='<div class="mg-row mg-d"><span class="mg-lab">Para piorar</span>cair ao conceito '+esc(String(mg.cair.para))+': bastaria <b>'+esc(String(mg.cair.alunos))+'</b> concluinte(s) a menos no Básico ou acima</div>';
   } else {
-    h+='<table class="nt-tbl"><thead><tr><th>Movimento</th><th class="n">Na nota contínua</th><th>Na média do curso*</th></tr></thead><tbody>';
-    if(mg.subir) h+='<tr><td>Subir ao conceito '+esc(String(mg.subir.para))+'</td><td class="n">'+esc(String(mg.subir.nota))+'</td><td class="sub">≈ '+esc(String(mg.subir.pontos))+' pontos</td></tr>';
-    if(mg.cair) h+='<tr><td>Cair ao conceito '+esc(String(mg.cair.para))+'</td><td class="n">'+esc(String(mg.cair.nota))+'</td><td class="sub">≈ '+esc(String(mg.cair.pontos))+' pontos</td></tr>';
-    h+='</tbody></table><p class="nt-obs">* distância aproximada na média de Componente Específico do curso (método até 2023).</p>';
+    var nota=(Math.round(parseFloat(String(rec.continuo).replace(',','.'))*1000)/1000).toFixed(3).replace('.',',');
+    h+='<div class="mg-est"><span class="mg-lab">Estado atual</span>nossa nota <b class="tnum">'+nota+'</b> · conceito '+esc(String(rec.conceito))+'</div>';
+    if(mg.subir) h+='<div class="mg-row mg-u"><span class="mg-lab">Para melhorar</span>subir ao conceito '+esc(String(mg.subir.para))+': faltam <b>'+esc(String(mg.subir.nota))+'</b> na nota <span class="mg-sub">(chegar a '+(CUT[mg.subir.para]||'')+')</span></div>';
+    if(mg.cair) h+='<div class="mg-row mg-d"><span class="mg-lab">Para piorar</span>cair ao conceito '+esc(String(mg.cair.para))+': folga de <b>'+esc(String(mg.cair.nota))+'</b> na nota <span class="mg-sub">(cair abaixo de '+(CUT[parseInt(rec.conceito,10)]||'')+')</span></div>';
   }
+  h+='<p class="nt-obs">Números reais, dos resultados oficiais do Inep.</p>';
   return h;
 }
 function eadsTab(){
@@ -630,25 +639,22 @@ function eadsTab(){
     '<p class="note">O CC vem da avaliação externa in loco (visita). A explicação “o que é o CC” está na aba Nota e Conceito.</p>';
 }
 function margensPI(){
-  var ordem=['adm','dir','psi','agro','enf','comp','ped'], rows='', rot='';
+  var ordem=['adm','dir','psi','agro','enf','comp','ped'], rows='';
   ordem.forEach(function(k){
     var dd=DATA[k], rr=(typeof RESULTADOS!=='undefined'&&RESULTADOS[k])||null;
     var rec=rr&&rr.historico&&rr.historico.length?rr.historico[0]:null, mg=rec&&rec.margem;
     if(!dd||!mg) return;
-    if(mg.rotulo && !rot) rot=mg.rotulo;
-    function cell(m){
-      if(!m) return '—';
-      if(m.alunos!=null) return 'conceito '+esc(String(m.para))+' · '+esc(String(m.alunos))+' concluinte(s)';
-      return 'conceito '+esc(String(m.para))+' · '+esc(String(m.nota))+' <span class="sub">(≈ '+esc(String(m.pontos))+' pt)</span>';
-    }
+    var licK=/licenc/i.test(dd.grau);
+    var estado = licK ? esc(String(rec.percentual||''))+' Básico+' : esc((Math.round(parseFloat(String(rec.continuo).replace(',','.'))*1000)/1000).toFixed(3).replace('.',','));
+    function up(m){ if(!m) return 'é o máximo'; if(m.alunos!=null) return '+'+esc(String(m.alunos))+' aluno(s) → conceito '+esc(String(m.para)); return 'faltam '+esc(String(m.nota))+' → conceito '+esc(String(m.para)); }
+    function dn(m){ if(!m) return '—'; if(m.alunos!=null) return '−'+esc(String(m.alunos))+' aluno(s) → conceito '+esc(String(m.para)); return 'folga '+esc(String(m.nota))+' → conceito '+esc(String(m.para)); }
     rows+='<tr><td class="dim">'+esc(dd.nome)+'</td>'+
-          '<td class="n"><span class="nt-cc cc-'+esc(String(rec.conceito))+'">'+esc(String(rec.conceito))+'</span> <span class="sub">'+esc(String(rec.ano))+'</span></td>'+
-          '<td>'+cell(mg.subir)+'</td><td>'+cell(mg.cair)+'</td></tr>';
+          '<td class="n"><span class="nt-cc cc-'+esc(String(rec.conceito))+'">'+esc(String(rec.conceito))+'</span> <span class="sub">'+estado+'</span></td>'+
+          '<td>'+up(mg.subir)+'</td><td>'+dn(mg.cair)+'</td></tr>';
   });
   return '<div class="panel-head"><h2>Margens de conceito — todos os cursos</h2><span class="cx">visão institucional</span></div>'+
-    (rot?'<p class="nt-proj">'+esc(rot)+'</p>':'')+
-    '<div class="card" style="padding:8px 10px"><table class="nt-tbl"><thead><tr><th>Curso</th><th class="n">Conceito</th><th>Para subir</th><th>Para cair</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
-    '<p class="note">Margens em projeção da SETREM a partir de dados públicos do Inep. Cada coordenador vê a do seu curso na aba “Nota e Conceito”.</p>';
+    '<div class="card" style="padding:8px 10px"><table class="nt-tbl"><thead><tr><th>Curso</th><th class="n">Nota · conceito</th><th>Para melhorar</th><th>Para piorar</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<p class="note">Números reais, dos resultados oficiais do Inep. Cada coordenador vê a margem do seu curso, com mais detalhe, na aba “Nota e Conceito”.</p>';
 }
 function renderNota(){
   var c=DATA[curCourse], r=(typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
@@ -673,9 +679,9 @@ function renderNota(){
   var mg=rec&&rec.margem;
   if(mg){
     var lic=/licenc/i.test(c.grau);
-    h+='<h3 class="nt-h">Margem do conceito — quanto falta para subir ou cair</h3>';
-    h+='<div class="nt-block"><div class="nt-t">No Conceito Enade '+esc(String(rec.ano))+' — conceito '+esc(String(rec.conceito))+'</div>'+
-       margemTbl(mg,lic)+'</div>';
+    h+='<h3 class="nt-h">Margem do conceito — o que falta para melhorar ou piorar</h3>';
+    h+='<div class="nt-block"><div class="nt-t">No Conceito Enade '+esc(String(rec.ano))+'</div>'+
+       margemTbl(mg,lic,rec)+'</div>';
   }
   var cp=(r&&r.cpc)||null;
   if(cp){
@@ -696,7 +702,7 @@ function renderNota(){
          (cc.fonte?'<br><a class="nt-fonte" href="'+esc(cc.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(cc.fonte)+' ›</a>':'')+
          '</span></div></div>';
     } else {
-      h+='<p class="note">Sem CC registrado no e-MEC (consulta de 28/10/2026).</p>';
+      h+='<p class="note">Sem CC registrado no e-MEC (consulta de 28/10/2026).'+(r.cc_nota?' '+esc(r.cc_nota):'')+'</p>';
     }
   }
   var igc=(typeof RESULTADOS!=='undefined'&&RESULTADOS.igc)||null;
