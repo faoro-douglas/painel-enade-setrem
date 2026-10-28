@@ -509,7 +509,7 @@ var RESULTADOS=/*__RESULTADOS__*/;
 function tabList(){
   var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['nota','Nota e Conceito'],['editais','Editais']];
   if(isPI) t.push(['pi','Procuradoria']);
-  t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['leg','Legislação'],['links','Links oficiais']);
+  t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['leg','Legislação'],['eads','EADs'],['links','Links oficiais']);
   return t;
 }
 
@@ -617,6 +617,18 @@ function margemTbl(mg,lic){
   }
   return h;
 }
+function eadsTab(){
+  var eads=(typeof RESULTADOS!=='undefined'&&RESULTADOS.ead)||[];
+  var rows=eads.map(function(e){
+    var cc=e.cc;
+    var ccCell = cc ? '<span class="nt-cc cc-'+esc(String(cc.conceito))+'">CC '+esc(String(cc.conceito))+'</span> <span class="sub">'+esc(String(cc.ano))+'</span>' : '<span class="sub">sem CC</span>';
+    return '<tr><td class="dim">'+esc(e.nome)+'</td><td class="sub">'+esc(String(e.codigo_emec))+'</td><td>'+ccCell+'</td><td class="sub">'+(e.nota?esc(e.nota):'')+'</td></tr>';
+  }).join('');
+  return '<div class="panel-head"><h2>Cursos EAD e semipresencial</h2><span class="cx">SETREM · ainda sem Conceito Enade</span></div>'+
+    '<p class="note">Cursos a distância e semipresenciais da SETREM. No e-MEC, ainda não têm Conceito Enade nem CPC; o indicador registrado é o <b>CC — Conceito de Curso</b>. <span class="ato">e-MEC — consulta da IES (28/10/2026)</span></p>'+
+    '<div class="card" style="padding:8px 10px"><table class="nt-tbl"><thead><tr><th>Curso</th><th>Cód. e-MEC</th><th>CC</th><th>Observação</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<p class="note">O CC vem da avaliação externa in loco (visita). A explicação “o que é o CC” está na aba Nota e Conceito.</p>';
+}
 function margensPI(){
   var ordem=['adm','dir','psi','agro','enf','comp','ped'], rows='', rot='';
   ordem.forEach(function(k){
@@ -673,6 +685,19 @@ function renderNota(){
        '<span class="nt-det">nota contínua '+esc(String(cp.continuo))+
        (cp.fonte?'<br><a class="nt-fonte" href="'+esc(cp.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(cp.fonte)+' ›</a>':'')+
        '</span></div></div>';
+  }
+  var cc=(r&&r.cc)||null;
+  if(r && ('cc' in r)){
+    h+='<h3 class="nt-h">CC — Conceito de Curso · avaliação in loco</h3>';
+    if(cc){
+      h+='<div class="card"><div class="nt-res"><span class="nt-ano tnum">'+esc(String(cc.ano))+'</span>'+
+         '<span class="nt-cc cc-'+esc(String(cc.conceito))+'">CC '+esc(String(cc.conceito))+'</span>'+
+         '<span class="nt-det">da avaliação externa in loco (visita)'+
+         (cc.fonte?'<br><a class="nt-fonte" href="'+esc(cc.fonte_link||'#')+'" target="_blank" rel="noopener">'+esc(cc.fonte)+' ›</a>':'')+
+         '</span></div></div>';
+    } else {
+      h+='<p class="note">Sem CC registrado no e-MEC (consulta de 28/10/2026).</p>';
+    }
   }
   var igc=(typeof RESULTADOS!=='undefined'&&RESULTADOS.igc)||null;
   if(igc){
@@ -753,6 +778,11 @@ function comoSaiNota(c){
     '<li>O IGC é o índice da instituição: a média ponderada das notas contínuas de CPC dos cursos avaliados nos últimos três anos (o CPC mais recente de cada curso), usando o número de matrículas de cada um. Em instituições com mestrado ou doutorado, entram também os conceitos da Capes. As faixas de 1 a 5 são as mesmas do Conceito Enade. <span class="ato">NT Inep nº 5/2023, itens 2.1, 3.1 e 4.1, e Tabela 5</span></li>'+
     '<li>Os últimos IDD, CPC e IGC publicados são os de 2023. Até 27/10/2026, o Inep não publicou regra nem calendário de IDD, CPC ou IGC para 2024 ou 2025. <span class="ato">Portaria Inep nº 203, de 11/04/2025; páginas de legislação do Inep consultadas em 27/10/2026</span></li>'+
    '</ul></div>'+
+  '<h4 class="nt-sec">3. CC — Conceito de Curso (avaliação in loco)</h4>'+
+  '<div class="nt-block"><ul class="nt-ul">'+
+   '<li>O CC (Conceito de Curso) resulta da avaliação in loco: uma comissão de avaliadores designada pelo Inep visita a instituição e atribui conceitos ao curso em três dimensões — organização didático-pedagógica, perfil do corpo docente e instalações físicas. A escala vai de 1 a 5, e conceitos iguais ou superiores a 3 indicam qualidade satisfatória. <span class="ato">Portaria Normativa MEC nº 840/2018, art. 20, §§ 1º e 2º</span></li>'+
+   '<li>A avaliação in loco está ligada aos processos de autorização, reconhecimento ou renovação de reconhecimento do curso, e esses pedidos são decididos considerando o relatório dela. Entre parênteses aparece o ano informado pelo e-MEC. <span class="ato">Decreto nº 9.235/2017, arts. 10 e 13; e-MEC</span></li>'+
+  '</ul></div>'+
   '<div class="nt-block nt-fontes"><div class="nt-t">Fontes oficiais <span class="ato">links conferidos em 27/10/2026</span></div><ul class="nt-ul">';
   if(!lic){ h+=
     '<li><a href="https://download.inep.gov.br/educacao_superior/enade/notas_tecnicas/2025/nota_tecnica_n_15_calculo_nota_participante_enade_bacharelado_cst_2025.pdf" target="_blank" rel="noopener">NT 15/2026 — nota do participante (bacharelado/CST)</a></li>'+
@@ -821,7 +851,9 @@ function renderMain(){
     var hint = curTab==='pi'?'A Procuradoria Institucional inicia e acompanha o processo <b>antes</b> do coordenador e dos estudantes (legislação, habilitação, acessos e declarações da IES).':
                (curTab==='coord'?'Depois da etapa institucional, o coordenador cuida das inscrições, da Avaliação da Prática (quando houver) e do acompanhamento dos seus estudantes.':
                'Por fim, o estudante cumpre o que é dele: questionário, prova e, se precisar, recursos e dispensa.');
-    var pre = (curTab==='pi') ? margensPI() : '';
+    var rEmec = (typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
+    var alertaEmec = (curTab==='pi' && rEmec && rEmec.alerta_emec) ? '<p class="note" style="border-left:3px solid var(--amber);border-radius:0;padding-left:10px"><b>Atenção (e-MEC):</b> '+esc(rEmec.alerta_emec)+'</p>' : '';
+    var pre = (curTab==='pi') ? margensPI()+alertaEmec : '';
     if(c.wait){ h=pre+'<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Será preenchido quando sair o edital de '+c.nome+'.'); }
     else if(!arr || !arr.length){ h=pre+'<div class="panel-head"><h2>'+titulo+'</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('Nada a listar neste momento.'); }
     else {
@@ -849,6 +881,8 @@ function renderMain(){
     var lk=LINKS.map(function(o){return '<a class="lk" href="'+esc(o.u)+'" target="_blank" rel="noopener"><div class="lt">'+esc(o.t)+'</div><div class="lu">'+esc(o.u)+'</div></a>';}).join('');
     h='<div class="panel-head"><h2>Links oficiais</h2></div><div class="card links">'+lk+'</div>'+
       '<p class="note">As duas páginas de legislação do INEP trazem a lista oficial e atualizada de editais, portarias e retificações do ENADE e da PND. Este painel é conferido semanalmente contra essas páginas.</p>';
+  } else if(curTab==='eads'){
+    h=eadsTab();
   }
   host.innerHTML=h;
 }
