@@ -1,0 +1,99 @@
+# Modelo de cronograma ENADE — esqueleto auditado (reutilizar a cada ciclo)
+
+**Para que serve:** a estrutura do cronograma (quais ações existem, quem é responsável, quais são do PI, qual o filtro de cada uma) é **estável a cada ciclo** — só as **datas** mudam de edital para edital. Este arquivo guarda o esqueleto já auditado (28/10/2026, Eng. Computação + Pedagogia) para que, quando um curso entrar em novo ciclo, seja só **preencher as datas do edital** — **nunca refazer a auditoria do zero**.
+
+Formato do painel (em `template.html`, `DATA.<curso>.prazos`): `{d:'texto',s:mk(ano,mês,dia)|null, e:mk(...)|null, t:'título', w:'papéis', de:'descrição'}`.
+- `w` define o filtro (função `parseAud`): contém `Procuradoria`/`PI` → PI; `Coordenador` → coord; `Estudante`/`ingressante`/`concluinte` → estudante; `INEP` → Inep. Pode ter vários (`'Procuradoria / Coordenador'`).
+- Item **só do PI** → `w:'Procuradoria'` (some para quem não destrava o código).
+
+---
+
+## A. BACHARELADO (e CST) — vale para Agro, Enf (2027), Adm, Dir, Psi (2028), Eng. Comp. (próximos ciclos)
+Cronograma = **ANEXO I** (ações comuns, no edital-base do ENADE do ciclo) **+ ANEXO IV** (ações específicas de bacharelado/CST). Onde o edital específico do bacharelado divergir do edital-base republicado, **vale o mais novo (republicação + retificações)**. Modelo pronto hoje: `DATA.comp.prazos` (41 itens) em `template.html` — copiar de lá e trocar as datas.
+
+41 ações (ordem cronológica). Coluna "Fonte da data" = de onde ler a data no novo edital:
+
+| # | Ação | Responsável / `w` | Fonte da data |
+|---|------|-------------------|---------------|
+| 1 | Enquadramento automático (rótulo Cine Brasil) | INEP | ANEXO I·I |
+| 2 | Verificação de informações no Cadastro e-MEC | **PI** + Coord | ANEXO I·II |
+| 3 | Verificação do acesso autenticado ao Sistema Enade | **PI** + Coord | ANEXO I·III |
+| 4 | Verificação do enquadramento automático | **só PI** | ANEXO I·IV |
+| 5 | Registro de declarações de não enquadramento | **só PI** | ANEXO I·V |
+| 6 | Inscrição dos concluintes habilitados | Coord | ANEXO I·VI |
+| 7 | Acompanhamento das ações dos inscritos (contínuo) | **PI** + Coord | ANEXO I·VIII |
+| 8 | Retificação de ações (enquadramento/inscrições concluintes) | **PI** + Coord | ANEXO I·VII |
+| 9 | Alteração do município de prova (mobilidade/EaD) | **PI** + Coord | ANEXO IV·II |
+| 10 | Preenchimento do cadastro pelo estudante | Estudante | ANEXO IV·I |
+| 11 | Questionário do Estudante concluinte (1º e 2º período) | Estudante | ANEXO IV·IV (IV.a/IV.b) |
+| 12 | Indicação da área (concluinte c/ +1 inscrição) | Estudante | ANEXO IV·III |
+| 13 | Solicitação de atendimento especializado | Estudante | ANEXO IV·V |
+| 14 | Solicitação de tratamento pelo nome social | Estudante | ANEXO IV·VI |
+| 15 | Resultado do atendimento especializado | INEP | ANEXO IV·VII |
+| 16 | Recurso do atendimento especializado | Estudante | ANEXO IV·VIII |
+| 17 | Indicação de IES de fronteira (condicional) | **só PI** | ANEXO IV·X |
+| 18 | Correção discursiva em espanhol/inglês (IES fronteira) | Estudante | ANEXO IV·XI |
+| 19 | Resultado do recurso de atendimento | INEP | ANEXO IV·IX |
+| 20 | Inscrição dos ingressantes habilitados | Coord | ANEXO I·IX |
+| 21 | Retificação das inscrições de ingressantes | Coord | ANEXO I·X |
+| 22 | Questionário do Ingressante | Estudante | ANEXO I·XI |
+| 23 | Cartão de Confirmação (locais de prova) | INEP + Estudante | ANEXO IV·XII |
+| 24 | Aplicação da prova (horário no edital específico) | INEP + Estud + Coord | ANEXO IV·XIII |
+| 25 | Questionário do Coordenador de Curso | Coord | ANEXO I·XII |
+| 26 | Declaração de Responsabilidade — inscritos não habilitados | Coord | ANEXO IV·XVII.a |
+| 27 | Registro de presença na prova pela IES | Coord | ANEXO IV·XIV |
+| 28 | Divulgação de cadernos e gabaritos preliminares | INEP + Estudante | ANEXO IV·XVI |
+| 29 | Definição da base de resultados válidos (indicadores) | INEP | ANEXO IV·XV |
+| 30 | Divulgação da relação de regulares | INEP + Coord | ANEXO IV·XVII |
+| 31 | Declaração de Responsabilidade — demais declarações | Coord | ANEXO IV·XVIII |
+| 32 | Dispensa de participação pelo estudante | Estudante | ANEXO IV·XIX |
+| 33 | Dispensa de participação pela IES | Coord | ANEXO IV·XX |
+| 34 | Análise/deliberação das dispensas pela IES | Coord | ANEXO IV·XXI |
+| 35 | Análise, pelo Inep, das dispensas da IES | INEP | ANEXO IV·XXII |
+| 36 | Recurso das dispensas do estudante (indef. pela IES) | Estudante | ANEXO IV·XXIII |
+| 37 | Recurso das dispensas da IES (indef. pelo Inep) | Coord | ANEXO IV·XXIV |
+| 38 | Resultado dos recursos de dispensa | INEP | ANEXO IV·XXV |
+| 39 | Gabaritos finais e expectativas de resposta | INEP | ANEXO IV·XXVI |
+| 40 | Regularização por ato do Inep | INEP | ANEXO I·XIII |
+| 41 | Resultados: Boletim, Microdados, Conceito Enade | INEP + Coord + Estud | ANEXO IV·XXVII |
+
+**Itens do PI no bacharelado (8):** #2,3,4,5,7,8,9,17. Só PI: #4,5,17.
+
+---
+
+## B. LICENCIATURA — vale para Pedagogia (TODO ANO) e qualquer nova licenciatura
+Cronograma = **ANEXO I** (comuns) + **ANEXO III** (Licenciaturas/PND, Avaliação Teórica) + **Edital da Avaliação da Prática (AP)** — em 2026 foi o Edital 30, dois períodos. Modelo pronto: `DATA.ped.prazos` (~70 itens) em `template.html`.
+
+- **Bloco comum (ANEXO I):** mesmos itens 1–9, 20–22, 25, 40 do bacharelado (enquadramento, verificações do PI, inscrições, questionário do coordenador, regularização). **Itens do PI na licenciatura (6):** ANEXO I·II, III, IV, V, VII, VIII. Só PI: IV, V. **O ANEXO III e o edital da AP NÃO têm item de PI.**
+- **Bloco Avaliação Teórica (ANEXO III):** cadastro/inscrição no Sistema PND, atendimento especializado, nome social, questionário do estudante (1º/2º), prova teórica (= PND), registro de presença, divulgações/recursos de gabarito e discursiva, dispensas, boletim, Conceito Enade. Datas: ANEXO III·I a XXXI.
+- **Bloco Avaliação da Prática (AP):** do edital próprio (dois períodos). Atores próprios (supervisor/orientador de estágio) → no painel marco como **Coordenador** (quem opera na IES) com o ator nomeado no título ("AP — ..."). O **Questionário de AP do Estudante** é obrigatório.
+
+---
+
+## C. Checklists (abas PI / Coordenador / Estudante) — estrutura estável
+- **PI (bacharelado, 8 + 2 gerais):** acompanhar legislação/prazos · verificar Cadastro e-MEC · verificar acesso ao Sistema Enade · verificar enquadramento (só PI) · registrar não enquadramento (só PI) · retificar ações · alterar município (mobilidade/EaD) · indicar IES de fronteira (só PI) · acompanhar inscritos (contínuo) · acompanhar regularidade/resultados.
+- **PI (licenciatura, 6 + 2 gerais):** os mesmos, **sem** "alterar município" e "IES de fronteira".
+- **Coordenador:** inscrições/retificação · (licenciatura: Avaliação da Prática) · registro de presença · acompanhar regularidade.
+- **Estudante:** questionário do estudante · recursos de gabarito · (licenciatura: Questionário de AP) · dispensa se faltou.
+Modelos prontos: `DATA.comp.pi/coord/estud` e `DATA.ped.pi/coord/estud`.
+
+---
+
+## D. RECEITA para instanciar um curso quando o edital sair (passo a passo)
+1. **Confirmar o ciclo** (curso × ano) pela portaria que define as áreas do ENADE (o robô semanal capta; ex. Portaria MEC 276/2026). O ciclo pode mudar — não assumir.
+2. **Reunir os editais** do ciclo: o edital-base do ENADE (ANEXO I + o anexo do grau: IV bacharelado / III licenciatura) + o edital específico do grau + (licenciatura) o edital da Avaliação da Prática.
+3. **Copiar o esqueleto** do curso-modelo do mesmo grau (`comp` para bacharelado, `ped` para licenciatura) e **trocar só as datas** (`d`, `s`, `e`) pela coluna "Fonte da data" acima. Manter `t`, `w`, `de`.
+4. **Aplicar TODAS as retificações** publicadas no DOU até a data (sempre checar; cada uma pode mudar datas ou desmembrar itens). Vale sempre a **mais nova**.
+5. **Conteúdo da prova:** adicionar as **portarias de matriz** do ciclo (Formação Geral + componente específico) em `DATA.<curso>.conteudo`, 100% verbatim (parse2.py/port.json). A prova e as portarias mudam a cada ciclo.
+6. **Nota e Conceito:** atualizar históricos/indicadores em `resultados.json` quando os dados oficiais saírem.
+7. `DATA.<curso>.wait = false`, ajustar `ano` e `prova`. Rodar `gen.py`, conferir no navegador (sem erro de console), rodar o **conferidor** (sessão ENADE 2025, `--previa` e no ar) → só publicar com **PODE PUBLICAR**.
+
+## E. ARMADILHAS já descobertas (não repetir)
+- **Republicação vence o edital específico** onde divergem (ex.: indicação da área 12/06 no Ed.61 × 24/06 na republicação → vale 24/06).
+- **Conferir os itens do PI na fonte**, não confiar só em resumo — responsável pode vir truncado no PDF.
+- **Licenciatura: concluinte é ISENTO da taxa da PND** e inscrito automaticamente (Ed.67/2026 art. 1.5.1). **NÃO** lançar itens de "taxa/isenção/inscrição geral" como tarefa — são de participante externo. Verificar o artigo equivalente no edital do novo ciclo.
+- **Excluir itens de outra área** (ex.: gabaritos de Letras Português-Inglês não entram em Pedagogia).
+- **Divergência entre editais no mesmo item** (ex.: recurso de dispensa do estudante — coordenador no Anexo III × estudante no Ed.67) → marcar para os **dois papéis** com nota, nunca escolher um e arriscar.
+- **IES de fronteira** = condicional (só se a SETREM for designada).
+- **Dados específicos da SETREM** (ex.: "sem ingressantes em tal curso") só entram se o **PI afirmar** para aquele curso — não presumir de um curso para outro.
+- **Nunca inventar datas antes do edital** — curso sem edital fica `wait:true` ("aguardando publicação"). É isso que mantém o painel confiável.
