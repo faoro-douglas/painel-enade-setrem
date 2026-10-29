@@ -203,6 +203,9 @@
   .aud-Estudante{color:var(--amber);background:var(--st-soon-bg)}
   .aud-INEP,.aud-Geral{color:var(--muted);background:var(--surface2);border-color:var(--line)}
   .cal-item.past{opacity:.62}
+  .cal-item.pi-focus{border-color:var(--violet);background:rgba(90,74,158,.07)}
+  .cal-item.pi-focus .cal-bar{background:var(--violet)}
+  .pz.pi-focus{box-shadow:inset 4px 0 0 var(--violet);background:rgba(90,74,158,.06);border-radius:8px}
   details.cal-past{margin-top:8px}
   details.cal-past summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:600;padding:8px 2px;list-style:none}
   details.cal-past summary::-webkit-details-marker{display:none}
@@ -409,12 +412,12 @@ var DATA = {
    {d:'13/04/2026',s:mk(2026,4,13),e:mk(2026,4,13),t:'Enquadramento automático do curso (rótulo Cine Brasil)',w:'INEP',de:'O Inep enquadra o curso pelo rótulo Cine Brasil no Cadastro e-MEC.'},
    {d:'17/04 a 07/07/2026',s:mk(2026,4,17),e:mk(2026,7,7),t:'AP — Instrumento de AP do Supervisor de Estágio (1º período)',w:'Coordenador',de:'Preenchido pelo supervisor de estágio; o coordenador acompanha.'},
    {d:'17/04 a 17/07/2026',s:mk(2026,4,17),e:mk(2026,7,17),t:'AP — Questionário de AP do Orientador de Estágio (1º período)',w:'Coordenador',de:'Preenchido pelo orientador de estágio; o coordenador acompanha.'},
-   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação de informações no Cadastro e-MEC',w:'Procuradoria / Coordenador',de:'PI e coordenador conferem os dados do curso e da IES no Cadastro e-MEC.'},
-   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação do acesso autenticado ao Sistema Enade',w:'Procuradoria / Coordenador',de:'Confirmar que PI e coordenador conseguem acessar o Sistema Enade.'},
+   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação de informações no Cadastro e-MEC',w:'Procuradoria / Coordenador',de:'Conferir os dados do curso e da IES no Cadastro e-MEC.'},
+   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação do acesso autenticado ao Sistema Enade',w:'Procuradoria / Coordenador',de:'Confirmar o acesso autenticado ao Sistema Enade.'},
    {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação do enquadramento automático',w:'Procuradoria',de:'Ação exclusiva do PI: conferir o enquadramento automático do curso.'},
    {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Registro de declarações de não enquadramento de curso',w:'Procuradoria',de:'Ação exclusiva do PI: registrar, quando for o caso, a declaração de não enquadramento do curso.'},
-   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Inscrição dos estudantes concluintes habilitados',w:'Coordenador',de:'O coordenador inscreve os concluintes habilitados (o PI pode fazer de forma complementar).'},
-   {d:'Da inscrição à regularização',s:mk(2026,4,27),e:null,t:'Acompanhamento das ações dos estudantes inscritos',w:'Procuradoria / Coordenador',de:'Ação contínua: PI e coordenador acompanham tudo o que os inscritos precisam fazer, até a regularização.'},
+   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Inscrição dos estudantes concluintes habilitados',w:'Coordenador',de:'O coordenador inscreve os concluintes habilitados.'},
+   {d:'Da inscrição à regularização',s:mk(2026,4,27),e:null,t:'Acompanhamento das ações dos estudantes inscritos',w:'Procuradoria / Coordenador',de:'Ação contínua: acompanhar tudo o que os inscritos precisam fazer, até a regularização.'},
    {d:'A partir de maio/2026',s:mk(2026,5,1),e:null,t:'AP — Pagamento do Auxílio de Avaliação Educacional (AAE) aos supervisores (1º período)',w:'Coordenador',de:'Pago pelo Inep aos professores supervisores que realizaram a AP no 1º período.'},
    {d:'19 a 27/05/2026',s:mk(2026,5,19),e:mk(2026,5,27),t:'Retificação de ações (enquadramento e inscrições de concluintes)',w:'Procuradoria / Coordenador',de:'Janela para corrigir enquadramento e inscrições de concluintes.'},
    {d:'22/06 a 10/07/2026',s:mk(2026,6,22),e:mk(2026,7,10),t:'Preenchimento do Cadastro no Sistema PND (inscrição, área, UF e município de prova)',w:'Estudante / concluinte',de:'O concluinte de licenciatura é inscrito pela IES e fica automaticamente vinculado ao Sistema PND, isento de taxa (Edital 67, art. 1.5.1). Aqui ele confirma a área e indica UF/município de prova.'},
@@ -436,7 +439,7 @@ var DATA = {
    {d:'10/08 a 27/11/2026',s:mk(2026,8,10),e:mk(2026,11,27),t:'AP — Preenchimento dos dados pessoais dos supervisores (2º período)',w:'Coordenador',de:'Preenchido pelo supervisor de estágio; o coordenador acompanha.'},
    {d:'10/08 a 27/11/2026',s:mk(2026,8,10),e:mk(2026,11,27),t:'AP — Instrumento de AP do Supervisor de Estágio (2º período)',w:'Coordenador',de:'Preenchido pelo supervisor de estágio; o coordenador acompanha.'},
    {d:'10/08 a 07/12/2026',s:mk(2026,8,10),e:mk(2026,12,7),t:'AP — Questionário de AP do Orientador de Estágio (2º período)',w:'Coordenador',de:'Preenchido pelo orientador de estágio; o coordenador acompanha.'},
-   {d:'17/08 a 17/09/2026',s:mk(2026,8,17),e:mk(2026,9,17),t:'Inscrição dos estudantes ingressantes habilitados',w:'Coordenador',de:'O coordenador inscreve os ingressantes habilitados (o PI pode fazer de forma complementar).'},
+   {d:'17/08 a 17/09/2026',s:mk(2026,8,17),e:mk(2026,9,17),t:'Inscrição dos estudantes ingressantes habilitados',w:'Coordenador',de:'O coordenador inscreve os ingressantes habilitados.'},
    {d:'A partir de setembro/2026',s:mk(2026,9,1),e:null,t:'AP — Pagamento do Auxílio de Avaliação Educacional (AAE) aos supervisores (2º período)',w:'Coordenador',de:'Pago pelo Inep aos professores supervisores que realizaram a AP no 2º período.'},
    {d:'09/09/2026',s:mk(2026,9,9),e:mk(2026,9,9),t:'Cartão de Confirmação da Inscrição (locais de prova — PND)',w:'INEP / Estudante',de:'Data alterada de 31/08 para 09/09 na retificação de 09/09. O estudante consulta o local de prova.'},
    {d:'18/09 a 25/10/2026',s:mk(2026,9,18),e:mk(2026,10,25),t:'Retificação das inscrições de ingressantes',w:'Coordenador',de:'Prazo prorrogado para 25/10 na retificação de 01/10 (era 30/09).'},
@@ -485,7 +488,7 @@ var DATA = {
    {b:'Acompanhar a regularidade e os resultados',s:'Conferir a regularidade geral e acompanhar a divulgação dos resultados (Boletim / Conceito Enade).'}
   ],
   coord:[
-   {b:'Inscrever ingressantes e retificar',s:'Retificação das inscrições de ingressantes até 25/10/2026 (a inscrição é do coordenador; o PI pode fazer de forma complementar).'},
+   {b:'Inscrever ingressantes e retificar',s:'Retificação das inscrições de ingressantes até 25/10/2026 (a inscrição é do coordenador).'},
    {b:'Avaliação da Prática (AP)',s:'Cadastrar orientadores e supervisores de estágio e inscrever os estudantes na AP até 06/11/2026; acompanhar os questionários de AP.'},
    {b:'Registro de presença',s:'Registrar a presença dos estudantes na prova (30/09 a 20/10/2026).'},
    {b:'Acompanhar regularidade',s:'Conferir no Sistema PND quem está regular; orientar quem faltou sobre dispensa/reaplicação.'}
@@ -502,12 +505,12 @@ var DATA = {
   prova:'Prova: 29/11/2026 — início 13h30, duração 4h',
   prazos:[
    {d:'13/04/2026',s:mk(2026,4,13),e:mk(2026,4,13),t:'Enquadramento automático do curso (rótulo Cine Brasil)',w:'INEP',de:'O Inep enquadra o curso pelo rótulo Cine Brasil no Cadastro e-MEC.'},
-   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação de informações no Cadastro e-MEC',w:'Procuradoria / Coordenador',de:'PI e coordenador conferem os dados do curso e da IES no Cadastro e-MEC.'},
-   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação do acesso autenticado ao Sistema Enade',w:'Procuradoria / Coordenador',de:'Confirmar que PI e coordenador conseguem acessar o Sistema Enade.'},
+   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação de informações no Cadastro e-MEC',w:'Procuradoria / Coordenador',de:'Conferir os dados do curso e da IES no Cadastro e-MEC.'},
+   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação do acesso autenticado ao Sistema Enade',w:'Procuradoria / Coordenador',de:'Confirmar o acesso autenticado ao Sistema Enade.'},
    {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Verificação do enquadramento automático',w:'Procuradoria',de:'Ação exclusiva do PI: conferir o enquadramento automático do curso.'},
    {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Registro de declarações de não enquadramento de curso',w:'Procuradoria',de:'Ação exclusiva do PI: registrar, quando for o caso, a declaração de não enquadramento do curso.'},
-   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Inscrição dos estudantes concluintes habilitados',w:'Coordenador',de:'O coordenador inscreve os concluintes habilitados (o PI pode fazer de forma complementar).'},
-   {d:'Da inscrição à regularização',s:mk(2026,4,27),e:null,t:'Acompanhamento das ações dos estudantes inscritos',w:'Procuradoria / Coordenador',de:'Ação contínua: PI e coordenador acompanham tudo o que os inscritos precisam fazer, até a regularização.'},
+   {d:'27/04 a 18/05/2026',s:mk(2026,4,27),e:mk(2026,5,18),t:'Inscrição dos estudantes concluintes habilitados',w:'Coordenador',de:'O coordenador inscreve os concluintes habilitados.'},
+   {d:'Da inscrição à regularização',s:mk(2026,4,27),e:null,t:'Acompanhamento das ações dos estudantes inscritos',w:'Procuradoria / Coordenador',de:'Ação contínua: acompanhar tudo o que os inscritos precisam fazer, até a regularização.'},
    {d:'19 a 27/05/2026',s:mk(2026,5,19),e:mk(2026,5,27),t:'Retificação de ações (enquadramento e inscrições de concluintes)',w:'Procuradoria / Coordenador',de:'Janela para corrigir enquadramento e inscrições de concluintes.'},
    {d:'19 a 27/05/2026',s:mk(2026,5,19),e:mk(2026,5,27),t:'Alteração do município de prova (mobilidade acadêmica / EaD)',w:'Procuradoria / Coordenador',de:'Ajustar o município de prova de estudantes em mobilidade ou vinculados a curso EaD.'},
    {d:'01/06 a 29/11/2026',s:mk(2026,6,1),e:mk(2026,11,29),t:'Preenchimento do cadastro pelo estudante',w:'Estudante',de:'O estudante completa/atualiza seu cadastro no Sistema Enade.'},
@@ -560,7 +563,7 @@ var DATA = {
    {b:'Acompanhar a regularidade e os resultados',s:'Conferir a regularidade geral e acompanhar a divulgação dos resultados (Conceito Enade / IGC).'}
   ],
   coord:[
-   {b:'Inscrições e retificação',s:'A inscrição de ingressantes é do coordenador (o PI pode fazer de forma complementar), com retificação até 25/10/2026. Observação SETREM: não há ingressantes de Eng. de Computação neste ciclo; os concluintes já foram inscritos (abr/mai).'},
+   {b:'Inscrições e retificação',s:'A inscrição de ingressantes é do coordenador, com retificação até 25/10/2026. Observação SETREM: não há ingressantes de Eng. de Computação neste ciclo; os concluintes já foram inscritos (abr/mai).'},
    {b:'Registro de presença',s:'Registrar a presença dos concluintes na prova de 03/12/2026 a 11/01/2027.'},
    {b:'Acompanhar regularidade',s:'Acompanhar a regularidade dos estudantes no Sistema Enade.'}
   ],
@@ -640,7 +643,10 @@ function renderTabs(){
 
 function prazoRow(p){
   var st=statusFrom(p.s,p.e), cls=st[0], lab=st[1];
-  return '<div class="pz"><div class="date tnum">'+esc(p.d)+'<div class="who">'+esc(p.w)+'</div></div>'+
+  var aud=parseAud(p.w);
+  var who=displayAud(aud).join(' / ');
+  var pf=(isPI && aud.indexOf('Procuradoria')>=0)?' pi-focus':'';
+  return '<div class="pz'+pf+'"><div class="date tnum">'+esc(p.d)+'<div class="who">'+esc(who)+'</div></div>'+
     '<div class="bd ti">'+esc(p.t)+'<div class="de">'+esc(p.de)+'</div></div>'+
     '<span class="chip '+cls+'">'+esc(lab)+'</span></div>';
 }
@@ -655,12 +661,14 @@ function parseAud(w){
   return a;
 }
 function visibleToViewer(aud){ if(isPI) return true; return !(aud.length===1 && aud[0]==='Procuradoria'); }
+function displayAud(aud){ if(isPI) return aud; return aud.filter(function(a){return a!=='Procuradoria';}); }
 function days(to){return Math.ceil((to-TODAY)/864e5);}
 function calItem(it){
   var p=it.p, cls=it.cls, when=it.when;
-  var auds=it.aud.map(function(a){return '<span class="aud aud-'+a+'">'+esc(a)+'</span>';}).join('');
+  var auds=displayAud(it.aud).map(function(a){return '<span class="aud aud-'+a+'">'+esc(a)+'</span>';}).join('');
   var whcls = cls==='soon'?'s-urgent':(cls==='now'?'s-now':(cls==='next'?'s-soon':'s-past'));
-  return '<div class="cal-item '+cls+'"><div class="cal-bar"></div><div class="cal-bd">'+
+  var pf=(isPI && it.aud.indexOf('Procuradoria')>=0)?' pi-focus':'';
+  return '<div class="cal-item '+cls+pf+'"><div class="cal-bar"></div><div class="cal-bd">'+
     '<div class="cal-top"><span class="cal-date tnum">'+esc(p.d)+'</span>'+
     '<span class="cal-when '+whcls+'">'+esc(when)+'</span></div>'+
     '<div class="cal-ti">'+esc(p.t)+'</div>'+
@@ -919,7 +927,7 @@ function renderMain(){
   } else if(curTab==='prazos'){
     if(c.wait){ h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O cronograma de '+c.nome+' sai com o edital da próxima avaliação deste curso no ENADE. Ainda não publicado.'); }
     else{
-    var rows=c.prazos.slice().map(prazoRow).join('');
+    var rows=c.prazos.filter(function(p){return visibleToViewer(parseAud(p.w));}).map(prazoRow).join('');
     h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+
       '<div class="legend"><span><i style="background:var(--st-urgent)"></i>urgente / em breve</span>'+
       '<span><i style="background:var(--st-now)"></i>aberto</span>'+
