@@ -390,6 +390,7 @@ function statusFrom(start,end){
   if(start && t<start){var days=Math.ceil((start-t)/864e5);return days<=10?['s-urgent','Em breve']:['s-soon','A vir'];}
   if(start && end && t>=start && t<=end){var dleft=Math.ceil((end-t)/864e5);return dleft<=10?['s-urgent','Encerra já']:['s-now','Aberto'];}
   if(end){var dl=Math.ceil((end-t)/864e5);return dl<=10?['s-urgent','Em breve']:['s-soon','A vir'];}
+  if(start) return ['s-now','Sem data final'];
   return ['s-soon','—'];
 }
 
@@ -488,16 +489,27 @@ var DATA = {
    {b:'Acompanhar a regularidade e os resultados',s:'Conferir a regularidade geral e acompanhar a divulgação dos resultados (Boletim / Conceito Enade).'}
   ],
   coord:[
-   {b:'Inscrever ingressantes e retificar',s:'Retificação das inscrições de ingressantes até 25/10/2026 (a inscrição é do coordenador).'},
-   {b:'Avaliação da Prática (AP)',s:'Cadastrar orientadores e supervisores de estágio e inscrever os estudantes na AP até 06/11/2026; acompanhar os questionários de AP.'},
-   {b:'Registro de presença',s:'Registrar a presença dos estudantes na prova (30/09 a 20/10/2026).'},
-   {b:'Acompanhar regularidade',s:'Conferir no Sistema PND quem está regular; orientar quem faltou sobre dispensa/reaplicação.'}
+   {b:'Verificar o Cadastro e-MEC e o acesso ao Sistema Enade',s:'27/04 a 18/05/2026: conferir os dados do curso e da IES no Cadastro e-MEC e confirmar o acesso ao Sistema Enade.'},
+   {b:'Inscrever os concluintes e retificar',s:'Inscrição dos concluintes habilitados (27/04 a 18/05); retificação do enquadramento e das inscrições de concluintes (19 a 27/05/2026).'},
+   {b:'Inscrever ingressantes e retificar',s:'Inscrição dos ingressantes habilitados (17/08 a 17/09); retificação até 25/10/2026.'},
+   {b:'Avaliação da Prática (AP) — organizar',s:'Declarar os estudantes habilitados, cadastrar orientadores e supervisores de estágio e inscrever os estudantes na AP (1º período até 12/06; 2º período até 06/11/2026).'},
+   {b:'Avaliação da Prática (AP) — acompanhar',s:'Acompanhar o Questionário de AP do estudante e os instrumentos de supervisor/orientador; registrar a Declaração de Responsabilidade da IES (1º período a partir de 09/07; 2º período a partir de 26/11/2026).'},
+   {b:'Registro de presença na prova',s:'Registrar a presença dos estudantes na prova teórica (30/09 a 20/10/2026).'},
+   {b:'Questionário do Coordenador de Curso',s:'Preencher o Questionário do Coordenador no Sistema Enade (30/11 a 04/12/2026).'},
+   {b:'Declarações de Responsabilidade da IES',s:'Registrar as declarações: inscritos não habilitados (a partir de 22/09) e demais declarações (a partir de 20/11/2026).'},
+   {b:'Dispensas da IES',s:'Solicitar dispensa pela IES e analisar/deliberar os pedidos dos estudantes (20/11/2026 a 29/01/2027); recorrer de indeferimento, se houver (01/02/2027).'},
+   {b:'Acompanhar a regularidade',s:'Conferir no Sistema PND/Enade quem está regular e orientar quem faltou sobre a dispensa. Acompanhamento contínuo até a regularização.'}
   ],
   estud:[
-   {b:'Questionário do Estudante',s:'Preenchimento é condição de regularidade. Resultado da licenciatura sai no Sistema PND (pnd.inep.gov.br).'},
-   {b:'Recursos de gabarito',s:'Recurso da expectativa de resposta da discursiva em 05–06/10/2026.'},
-   {b:'Avaliação da Prática (AP)',s:'Responder o Questionário de AP (até 16/11) e participar das atividades da prática.'},
-   {b:'Se faltou à prova',s:'Solicitar dispensa no prazo (20/11/2026 a 15/01/2027).'}
+   {b:'Cadastro no Sistema PND',s:'O concluinte é inscrito pela IES e fica isento de taxa. Confirmar a área e indicar UF/município de prova (22/06 a 10/07/2026).'},
+   {b:'Questionário do Estudante',s:'Preenchimento é condição de regularidade. 1º período 22/06 a 10/07; 2º período 27/07 a 19/09/2026. Resultado sai no Sistema PND (pnd.inep.gov.br).'},
+   {b:'Questionário do Ingressante',s:'Para o estudante ingressante (quem está começando o curso): preenchimento de 30/10 a 18/12/2026. É condição de regularidade.'},
+   {b:'Atendimento especializado / nome social',s:'Solicitar atendimento especializado ou tratamento pelo nome social (22/06 a 10/07); recurso de atendimento (14 a 16/07/2026).'},
+   {b:'Prova teórica (PND) — 20/09/2026',s:'Já realizada. Levar documento com foto; seguir as instruções do Cartão de Confirmação.'},
+   {b:'Recursos de gabarito e correção',s:'Recurso dos gabaritos objetivos (24–25/09), da expectativa de resposta da discursiva (05–06/10) e da correção da discursiva (10–12/11/2026).'},
+   {b:'Avaliação da Prática (AP)',s:'Responder o Questionário de AP do estudante — obrigatório (1º período até 26/06; 2º período até 16/11/2026) — e participar das atividades da prática.'},
+   {b:'Se faltou à prova',s:'Solicitar dispensa no prazo (20/11/2026 a 15/01/2027); recurso em 01/02/2027.'},
+   {b:'Resultados',s:'Resultado individual e Boletim Individual em 15/12/2026; Boletim de Desempenho do Enade a partir de 26/01/2027; Conceito Enade a partir de 10/03/2027.'}
   ]
  },
  comp:{
@@ -563,14 +575,26 @@ var DATA = {
    {b:'Acompanhar a regularidade e os resultados',s:'Conferir a regularidade geral e acompanhar a divulgação dos resultados (Conceito Enade / IGC).'}
   ],
   coord:[
-   {b:'Inscrições e retificação',s:'A inscrição de ingressantes é do coordenador, com retificação até 25/10/2026. Observação SETREM: não há ingressantes de Eng. de Computação neste ciclo; os concluintes já foram inscritos (abr/mai).'},
-   {b:'Registro de presença',s:'Registrar a presença dos concluintes na prova de 03/12/2026 a 11/01/2027.'},
-   {b:'Acompanhar regularidade',s:'Acompanhar a regularidade dos estudantes no Sistema Enade.'}
+   {b:'Verificar o Cadastro e-MEC e o acesso ao Sistema Enade',s:'27/04 a 18/05/2026: conferir os dados do curso e da IES no Cadastro e-MEC e confirmar o acesso ao Sistema Enade.'},
+   {b:'Inscrever os concluintes e retificar',s:'Inscrição dos concluintes habilitados (27/04 a 18/05); retificação do enquadramento e das inscrições de concluintes (19 a 27/05/2026). Os concluintes já foram inscritos (abr/mai).'},
+   {b:'Alteração de município de prova (se houver)',s:'Ajustar o município de prova de estudantes em mobilidade acadêmica ou vinculados a curso EaD (19 a 27/05/2026).'},
+   {b:'Inscrições de ingressantes',s:'A inscrição de ingressantes é do coordenador (17/08 a 17/09), com retificação até 25/10/2026. Observação SETREM: não há ingressantes de Eng. de Computação neste ciclo.'},
+   {b:'Registro de presença na prova',s:'Registrar a presença dos concluintes na prova (03/12/2026 a 11/01/2027).'},
+   {b:'Questionário do Coordenador de Curso',s:'Preencher o Questionário do Coordenador no Sistema Enade (30/11 a 04/12/2026).'},
+   {b:'Declarações de Responsabilidade da IES',s:'Registrar as declarações: inscritos não habilitados (a partir de 01/12) e demais declarações (a partir de 13/01/2027).'},
+   {b:'Dispensas da IES',s:'Solicitar dispensa pela IES e analisar/deliberar os pedidos dos estudantes (13/01 a 16/02/2027); recorrer de indeferimento, se houver (17/02 a 03/03/2027).'},
+   {b:'Acompanhar a regularidade',s:'Acompanhar a regularidade dos estudantes no Sistema Enade. Acompanhamento contínuo até a regularização.'}
   ],
   estud:[
-   {b:'Questionário do Estudante',s:'Preencher até o dia da prova (29/11). É condição de regularidade. Resultado sai no Sistema Enade.'},
-   {b:'Dia da prova — 29/11/2026',s:'Chegar cedo, levar documento com foto; respostas com caneta esferográfica preta. Início 13h30, 4 horas.'},
-   {b:'Se faltou à prova',s:'Solicitar dispensa de 13/01 a 05/02/2027.'}
+   {b:'Preencher o cadastro',s:'Completar/atualizar o cadastro no Sistema Enade (01/06 a 29/11/2026).'},
+   {b:'Questionário do Estudante',s:'Preencher até o dia da prova (até as 13h de 29/11). É condição de regularidade. 1º período 01/06 a 24/07; 2º período 03/08 a 29/11/2026.'},
+   {b:'Indicação da área',s:'Se tiver mais de uma inscrição, indicar a área de avaliação (01 a 24/06/2026).'},
+   {b:'Atendimento especializado / nome social',s:'Solicitar atendimento especializado ou tratamento pelo nome social (01/06 a 24/07); recurso de atendimento (03 a 07/08/2026).'},
+   {b:'IES de fronteira (se for o caso)',s:'Só se a SETREM for IES de fronteira: solicitar a correção da questão discursiva em espanhol ou inglês (13 a 21/08/2026).'},
+   {b:'Local da prova (Cartão de Confirmação)',s:'Consultar o local de prova no Sistema Enade, no Cartão de Confirmação da Inscrição (09 a 29/11/2026).'},
+   {b:'Dia da prova — 29/11/2026',s:'Chegar cedo, levar documento com foto; respostas com caneta esferográfica preta. Início 13h30, término 17h30.'},
+   {b:'Se faltou à prova',s:'Solicitar dispensa (13/01 a 05/02/2027); recurso de indeferimento (17/02 a 03/03/2027).'},
+   {b:'Resultados',s:'Boletim de Desempenho, Microdados e Conceito Enade a partir de 30/08/2027.'}
   ]
  },
  agro:{
@@ -683,7 +707,7 @@ function renderCal(){
     var aud=parseAud(p.w), bucket, ref, when;
     if(p.e && TODAY>p.e){bucket='past';ref=p.e;when='Encerrado';}
     else if(p.s && p.s>TODAY){var ds=days(p.s);bucket='next';ref=p.s;when=ds<=0?'Começa hoje':('Começa em '+ds+(ds===1?' dia':' dias'));}
-    else {ref=p.e||p.s;var de=p.e?days(p.e):999;bucket=de<=10?'soon':'now';when=p.e?(de<=0?'Encerra hoje':('Encerra em '+de+(de===1?' dia':' dias'))):'Em andamento';}
+    else {ref=p.e||p.s;var de=p.e?days(p.e):999;bucket=de<=10?'soon':'now';when=p.e?(de<=0?'Encerra hoje':('Encerra em '+de+(de===1?' dia':' dias'))):'Sem data final';}
     return {p:p,aud:aud,bucket:bucket,cls:bucket,ref:ref,when:when};
   }).filter(function(it){return visibleToViewer(it.aud);});
   function passAud(it){return calFilter==='todos'?true:it.aud.indexOf(calFilter)>=0;}
@@ -927,14 +951,21 @@ function renderMain(){
   } else if(curTab==='prazos'){
     if(c.wait){ h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O cronograma de '+c.nome+' sai com o edital da próxima avaliação deste curso no ENADE. Ainda não publicado.'); }
     else{
-    var rows=c.prazos.filter(function(p){return visibleToViewer(parseAud(p.w));}).map(prazoRow).join('');
+    var visP=c.prazos.filter(function(p){return visibleToViewer(parseAud(p.w));});
+    function pzBkt(p){var t=TODAY; if(p.e&&t>p.e)return 2; if(p.s&&p.s>t)return 1; return 0;}
+    var pzAber=visP.filter(function(p){return pzBkt(p)===0;}).sort(function(a,b){return (a.e?a.e.getTime():9e15)-(b.e?b.e.getTime():9e15);});
+    var pzVir=visP.filter(function(p){return pzBkt(p)===1;}).sort(function(a,b){return (a.s?a.s.getTime():9e15)-(b.s?b.s.getTime():9e15);});
+    var pzEnc=visP.filter(function(p){return pzBkt(p)===2;}).sort(function(a,b){return (b.e?b.e.getTime():0)-(a.e?a.e.getTime():0);});
+    var ativos=pzAber.concat(pzVir).map(prazoRow).join('');
+    var fechados=pzEnc.map(prazoRow).join('');
     h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+
       '<div class="legend"><span><i style="background:var(--st-urgent)"></i>urgente / em breve</span>'+
       '<span><i style="background:var(--st-now)"></i>aberto</span>'+
       '<span><i style="background:var(--st-soon)"></i>a vir</span>'+
       '<span><i style="background:var(--st-past)"></i>encerrado</span></div>'+
-      '<div class="card list" style="margin-top:10px">'+rows+'</div>'+
-      '<p class="note">Datas conforme Editais INEP nº 30, 49, 61 e 67/2026 e suas retificações (ver aba Editais). Status calculado automaticamente para a data de hoje.</p>';
+      (ativos?'<div class="card list" style="margin-top:10px">'+ativos+'</div>':'<div class="cal-empty">Nada aberto ou a vir neste momento para este curso.</div>')+
+      (fechados?'<details class="cal-past" style="margin-top:10px"><summary>Já encerrados ('+pzEnc.length+')</summary><div class="card list" style="margin-top:8px">'+fechados+'</div></details>':'')+
+      '<p class="note">Primeiro o que está <b>aberto</b> e o que <b>vai abrir</b>; o que já passou fica recolhido em “Já encerrados”, no fim (nada é removido). Datas conforme Editais INEP nº 30, 49, 61 e 67/2026 e suas retificações. Status calculado para a data de hoje.</p>';
     }
   } else if(curTab==='conteudo'){
     if(c.wait){ h='<div class="panel-head"><h2>O que cai na prova</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('As portarias de matriz (Formação Geral e componente específico de '+c.nome+') ainda não foram publicadas. Serão adicionadas aqui, na íntegra, quando saírem no DOU.'); }
@@ -984,7 +1015,7 @@ function renderMain(){
       '<div class="card list">'+nv+'</div>'+
       '<p class="note">A republicação de 10/08 e boa parte das mudanças de datas foram motivadas pela reforma do Enamed (Medicina) — que não temos. Acima ficam apenas as que afetam os nossos cursos.</p>';
   } else if(curTab==='leg'){
-    var rows=ATOS.map(function(o){
+    var rows=ATOS.slice().sort(function(a,b){var x=a.iso||'',y=b.iso||'';return x<y?1:(x>y?-1:0);}).map(function(o){
       return '<a class="lei-item" href="'+esc(o.link)+'" target="_blank" rel="noopener" data-s="'+esc((o.titulo+' '+(o.ementa||'')+' '+(o.d||'')).toLowerCase())+'">'+
         '<span class="lei-d tnum">'+esc(o.d||'—')+'</span>'+
         '<span class="lei-main"><span class="lei-t">'+esc(o.titulo)+'</span>'+

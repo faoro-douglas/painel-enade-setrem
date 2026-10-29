@@ -33,6 +33,13 @@ ANO_MIN = 2025                      # ciclo atual (matrizes de licenciatura saí
 ATOS = "atos.json"                 # lista completa atual de atos ENADE/PND (para o painel)
 NOVI_AUTO = "novidades_auto.json"  # novidades detectadas (aba Novidades)
 
+# Retificações cuja data de PUBLICAÇÃO não vem do título nem da fonte (o título traz a
+# data do edital-mãe, e a origem INEP/DOU não manda dataDePublicacao). Fixadas pelo trecho
+# do link. Quando o monitor acusar uma nova retificação, acrescentar a linha aqui.
+RET_FIX = {
+    "retificacao-740594934": ("27/10/2026", "2026-10-27"),  # ret. 27/10/2026 do Edital 49 (Questionário do Ingressante -> 30/10)
+}
+
 INCLUI = re.compile(r"edital|portaria|retifica", re.I)
 EXCLUI = re.compile(r"medicina|enamed|rede nacional de certificadores|\bRNC\b|"
                     r"interlocutores do enem|chamada p[uú]blica|resultados da chamada|colaboradores|"
@@ -77,20 +84,26 @@ def fetch(u):
         print("  ! falha ao ler", u[:70], "->", e)
         return ""
 
+def _dmy(d, mo, y):
+    return ("%02d/%02d/%d" % (d, mo, y), "%04d-%02d-%02d" % (y, mo, d))
+
 def datas(titulo, datestr=None):
-    m = re.search(r"(\d{1,2}) de (\w+) de (\d{4})", titulo or "")
-    if m:
-        try:
-            d, mo, y = int(m.group(1)), MESES.index(m.group(2).lower())+1, int(m.group(3))
-            return ("%02d/%02d/%d" % (d, mo, y), "%04d-%02d-%02d" % (y, mo, d))
-        except Exception:
-            pass
+    pub = None
     if datestr:
         m = re.search(r"(\d{1,2})/(\d{1,2})/(\d{4})", datestr)
         if m:
-            d, mo, y = int(m.group(1)), int(m.group(2)), int(m.group(3))
-            return ("%02d/%02d/%d" % (d, mo, y), "%04d-%02d-%02d" % (y, mo, d))
-    return ("", "")
+            pub = _dmy(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    # Em retificação, a data que aparece no título é a do ato RETIFICADO (edital-mãe),
+    # não a da retificação em si. Vale a data de PUBLICAÇÃO quando houver.
+    if (titulo or "").strip().lower().startswith("retifica") and pub:
+        return pub
+    m = re.search(r"(\d{1,2}) de (\w+) de (\d{4})", titulo or "")
+    if m:
+        try:
+            return _dmy(int(m.group(1)), MESES.index(m.group(2).lower())+1, int(m.group(3)))
+        except Exception:
+            pass
+    return pub or ("", "")
 
 def chave(titulo):
     t = (titulo or "").lower()
@@ -174,6 +187,10 @@ def main():
     by = {}
     for a in inep + mec:   # INEP primeiro -> prioriza o link do Diário Oficial na deduplicação
         by.setdefault(a["key"], a)
+    for a in by.values():                       # corrige datas de retificações conhecidas (pelo link)
+        for slug, (dd, ii) in RET_FIX.items():
+            if slug in (a.get("link") or ""):
+                a["d"], a["iso"] = dd, ii
     cur = sorted(by.values(), key=lambda a: a["iso"] or "0000", reverse=True)
 
     first = not os.path.exists(ATOS)

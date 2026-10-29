@@ -75,6 +75,8 @@ Cronograma = **ANEXO I** (comuns) + **ANEXO III** (Licenciaturas/PND, Avaliaçã
 - **PI (licenciatura, 6 + 2 gerais):** os mesmos, **sem** "alterar município" e "IES de fronteira".
 - **Coordenador:** inscrições/retificação · (licenciatura: Avaliação da Prática) · registro de presença · acompanhar regularidade.
 - **Estudante:** questionário do estudante · recursos de gabarito · (licenciatura: Questionário de AP) · dispensa se faltou.
+
+**COMPLETUDE OBRIGATÓRIA (regra, não opção):** cada checklist de papel tem de cobrir **TODA** tarefa daquele papel que está em `prazos[]` (um item pode agrupar vários prazos — ex.: "Dispensas da IES" = solicitar+analisar+recorrer — mas nenhum prazo pode ficar de fora). Itens **só do PI** não entram em coord/estud. As datas do checklist têm de bater com os prazos. **Verificar sempre** (seção F). Já foram esquecidos uma vez: **Questionário do Ingressante** (estudante), **Questionário do Coordenador**, **declarações de responsabilidade**, **dispensas**, **atendimento especializado/nome social**, **cartão de confirmação**. Não repetir.
 Modelos prontos: `DATA.comp.pi/coord/estud` e `DATA.ped.pi/coord/estud`.
 
 ---
@@ -82,11 +84,11 @@ Modelos prontos: `DATA.comp.pi/coord/estud` e `DATA.ped.pi/coord/estud`.
 ## D. RECEITA para instanciar um curso quando o edital sair (passo a passo)
 1. **Confirmar o ciclo** (curso × ano) pela portaria que define as áreas do ENADE (o robô semanal capta; ex. Portaria MEC 276/2026). O ciclo pode mudar — não assumir.
 2. **Reunir os editais** do ciclo: o edital-base do ENADE (ANEXO I + o anexo do grau: IV bacharelado / III licenciatura) + o edital específico do grau + (licenciatura) o edital da Avaliação da Prática.
-3. **Copiar o esqueleto** do curso-modelo do mesmo grau (`comp` para bacharelado, `ped` para licenciatura) e **trocar só as datas** (`d`, `s`, `e`) pela coluna "Fonte da data" acima. Manter `t`, `w`, `de`.
+3. **Copiar o esqueleto** do curso-modelo do mesmo grau (`comp` para bacharelado, `ped` para licenciatura) e **trocar só as datas** (`d`, `s`, `e`) pela coluna "Fonte da data" acima. Manter `t`, `w`, `de`. **E reescrever os checklists `pi`/`coord`/`estud` cobrindo TODA tarefa de cada papel** (seção C — completude obrigatória).
 4. **Aplicar TODAS as retificações** publicadas no DOU até a data (sempre checar; cada uma pode mudar datas ou desmembrar itens). Vale sempre a **mais nova**.
 5. **Conteúdo da prova:** adicionar as **portarias de matriz** do ciclo (Formação Geral + componente específico) em `DATA.<curso>.conteudo`, 100% verbatim (parse2.py/port.json). A prova e as portarias mudam a cada ciclo.
 6. **Nota e Conceito:** atualizar históricos/indicadores em `resultados.json` quando os dados oficiais saírem.
-7. `DATA.<curso>.wait = false`, ajustar `ano` e `prova`. Rodar `gen.py`, conferir no navegador (sem erro de console), rodar o **conferidor** (sessão ENADE 2025, `--previa` e no ar) → só publicar com **PODE PUBLICAR**.
+7. `DATA.<curso>.wait = false`, ajustar `ano` e `prova`. Rodar `gen.py`, conferir no navegador (sem erro de console), **rodar o pente-fino de completude (seção F)**, rodar o **conferidor** (sessão ENADE 2025, `--previa` e no ar) → só publicar com **PODE PUBLICAR**.
 
 ## E. ARMADILHAS já descobertas (não repetir)
 - **Republicação vence o edital específico** onde divergem (ex.: indicação da área 12/06 no Ed.61 × 24/06 na republicação → vale 24/06).
@@ -97,3 +99,24 @@ Modelos prontos: `DATA.comp.pi/coord/estud` e `DATA.ped.pi/coord/estud`.
 - **IES de fronteira** = condicional (só se a SETREM for designada).
 - **Dados específicos da SETREM** (ex.: "sem ingressantes em tal curso") só entram se o **PI afirmar** para aquele curso — não presumir de um curso para outro.
 - **Nunca inventar datas antes do edital** — curso sem edital fica `wait:true` ("aguardando publicação"). É isso que mantém o painel confiável.
+
+## F. PENTE-FINO DE COMPLETUDE (rodar sempre antes de publicar um curso novo)
+O risco nº 1 é uma aba existir e **não ter tudo** (o coordenador/estudante não vê uma tarefa e perde prazo → "o PI fez errado"). Então, para cada curso não-`wait`:
+1. **Cruzamento automático checklist × cronograma** (rodar no navegador, com o painel carregado):
+   ```js
+   ['ped','comp'].forEach(function(cu){var c=DATA[cu];['pi','coord','estud'].forEach(function(rk){
+     var role={pi:'Procuradoria',coord:'Coordenador',estud:'Estudante'}[rk];
+     var praz=c.prazos.filter(function(p){return parseAud(p.w).indexOf(role)>=0;}).map(function(p){return p.t;});
+     console.log(cu,role,'cronograma:',praz.length,praz,'| checklist:',c[rk].map(function(o){return o.b;}));
+   });});
+   ```
+   Conferir item a item que cada tarefa do cronograma está coberta por algum item do checklist.
+2. **Agentes independentes** (pente-fino "caprichado", a pedido do Faoro): 1 agente por dimensão, cobrindo TODAS as abas — (a) checklists pi/coord/estud × cronograma; (b) "O que cai na prova" × portarias/port.json; (c) "Nota e Conceito" + EADs × resultados.json; (d) Editais/Links/Novidades/Legislação + datas × editais. Cada um só lê e reporta lacunas/divergências; eu consolido e corrijo.
+3. **Conferidor** (sessão ENADE 2025) `--previa` e no ar → **PODE PUBLICAR**.
+
+## G. COMPORTAMENTOS DE VISÃO E ORDEM (manter sempre — pedidos do Faoro em 28–29/10/2026)
+- **Coordenador/estudante NUNCA veem Procuradoria:** itens só-PI ocultos (Calendário e Prazos); itens PI+coord aparecem pra eles só como "Coordenador", sem selo nem a palavra "PI"/"Procuradoria"; descrições sem citar PI. (`visibleToViewer` + `displayAud`, e `de` neutras.)
+- **PI destravado:** vê tudo; os itens de Procuradoria vêm **destacados em violeta** (`.pi-focus`) = o que ele precisa fazer; o resto é só acompanhar.
+- **Aba Prazos ordenada por status:** primeiro o que está **aberto** (fechando antes no topo), depois o que **vai abrir**, e os **encerrados recolhidos** num `<details>` "Já encerrados" no fim (nunca remover). Mesma lógica do Calendário.
+- **Itens sem fim no edital** ("a partir de…" / contínuo): rótulo **"Sem data final"** (não "Em andamento" solto). Não inventar data de término.
+- **Legislação** ordena por data no render; retificação cuja data de publicação não vem no título entra no `RET_FIX` do `check_inep.py` (senão o robô volta a datá-la pela data do edital-mãe).
