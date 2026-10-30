@@ -97,7 +97,7 @@ Modelos prontos: `DATA.comp.pi/coord/estud` e `DATA.ped.pi/coord/estud`.
 - **Excluir itens de outra área** (ex.: gabaritos de Letras Português-Inglês não entram em Pedagogia).
 - **Divergência entre editais no mesmo item** (ex.: recurso de dispensa do estudante — coordenador no Anexo III × estudante no Ed.67) → marcar para os **dois papéis** com nota, nunca escolher um e arriscar.
 - **IES de fronteira** = condicional (só se a SETREM for designada).
-- **Dados específicos da SETREM** (ex.: "sem ingressantes em tal curso") só entram se o **PI afirmar** para aquele curso — não presumir de um curso para outro.
+- **NÃO amarrar no status operacional do ano** (ex.: "sem ingressantes em tal curso neste ciclo", "concluintes já inscritos"). Fica ERRADO no ciclo seguinte — quem não teve ingressante este ano pode ter no próximo. Manter SEMPRE a tarefa do edital aparecendo para todos; o painel é reutilizável, não um retrato do ano. (Decisão do Faoro, 30/10/2026 — reverteu a ideia anterior de anotar "sem ingressantes".)
 - **Nunca inventar datas antes do edital** — curso sem edital fica `wait:true` ("aguardando publicação"). É isso que mantém o painel confiável.
 
 ## F. PENTE-FINO DE COMPLETUDE (rodar sempre antes de publicar um curso novo)
