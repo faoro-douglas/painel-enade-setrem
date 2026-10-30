@@ -792,9 +792,9 @@ function renderProvas(){
   var rr=(typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
   var rec=rr&&rr.historico&&rr.historico.length?rr.historico[0]:null;
   var ultimo=rec?rec.ano:null;
-  var PROVAS='https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade/provas-e-gabaritos';
+  var PROVAS=lic?'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-das-licenciaturas/provas-e-gabaritos':'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade/provas-e-gabaritos';
   var MOD=lic?'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-das-licenciaturas':'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-bacharelado-e-superiores-de-tecnologia';
-  var PND='https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/prova-nacional-docente';
+  var PND='https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/prova-nacional-docente';
   var h='<div class="panel-head"><h2>Provas e gabaritos</h2><span class="cx">'+esc(cx)+'</span></div>';
   h+='<div class="card pg-card">';
   if(ultimo){
