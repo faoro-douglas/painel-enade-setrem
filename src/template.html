@@ -618,17 +618,17 @@ var DATA = {
   prazos:[], conteudo:[], pi:[], coord:[], estud:[]
  },
  adm:{
-  nome:'Administração', grau:'Bacharelado', ano:'2028 (Ano I)', wait:true,
+  nome:'Administração', grau:'Bacharelado', ano:'2028 (provável)', wait:true,
   prova:'2028 — aguardando edital e portarias',
   prazos:[], conteudo:[], pi:[], coord:[], estud:[]
  },
  dir:{
-  nome:'Direito', grau:'Bacharelado', ano:'2028 (Ano I)', wait:true,
+  nome:'Direito', grau:'Bacharelado', ano:'2028 (provável)', wait:true,
   prova:'2028 — aguardando edital e portarias',
   prazos:[], conteudo:[], pi:[], coord:[], estud:[]
  },
  psi:{
-  nome:'Psicologia', grau:'Bacharelado', ano:'2028 (Ano I)', wait:true,
+  nome:'Psicologia', grau:'Bacharelado', ano:'2028 (provável)', wait:true,
   prova:'2028 — aguardando edital e portarias',
   prazos:[], conteudo:[], pi:[], coord:[], estud:[]
  }
@@ -791,7 +791,15 @@ function renderProvas(){
   var lic=/licenc/i.test(c.grau);
   var rr=(typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
   var rec=rr&&rr.historico&&rr.historico.length?rr.historico[0]:null;
+  /* Última PROVA realizada, DERIVADA do dado (não da memória): o histórico traz o último
+     conceito PUBLICADO; mas se o resultados.json registra um conceito ainda pendente de um
+     exame que JÁ ocorreu (ex.: adm/dir/psi — "Conceito Enade 2025", divulgação só em
+     03/11/2026), a prova desse ano já existe. Não vale se houver prova FUTURA citada
+     (ex.: comp, "Prova em 29/11/2026"). */
   var ultimo=rec?rec.ano:null;
+  var px=(rr&&rr.proximo)||'', mc=px.match(/Conceito Enade\s+(\d{4})/);
+  var mpf=px.match(/Prova em\s+(\d{1,2})\/(\d{1,2})\/(\d{4})/), provaFutura=mpf?mk(+mpf[3],+mpf[2],+mpf[1])>TODAY:false;  // só bloqueia se a prova for DE FATO futura
+  if(mc && !provaFutura){ var y=+mc[1]; if(y>(ultimo||0) && y<=TODAY.getFullYear()) ultimo=y; }
   var PROVAS=lic?'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-das-licenciaturas/provas-e-gabaritos':'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade/provas-e-gabaritos';
   var MOD=lic?'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-das-licenciaturas':'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-bacharelado-e-superiores-de-tecnologia';
   var PND='https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/prova-nacional-docente';
@@ -805,8 +813,12 @@ function renderProvas(){
   }
   h+='<a class="pg-btn" href="'+PROVAS+'" target="_blank" rel="noopener">Abrir provas e gabaritos (INEP) ›</a>';
   h+='</div>';
+  if(!lic){
+    if(c.wait){ var ap=(c.ano||'').replace(/\s*\(.*\)/,''); h+='<p class="note"><b>Próxima avaliação: '+esc(ap)+' (provável)</b> — o ENADE dos bacharelados é trienal e o edital desse ano ainda não foi publicado; a data só é confirmada quando ele sair (o monitor avisa).</p>'; }
+    else { h+='<p class="note"><b>Em avaliação no ciclo atual ('+esc((c.ano||'').replace(/\s*\(.*\)/,''))+')</b>, conforme o edital.</p>'; }
+  }
   if(lic){
-    h+='<p class="note">A Pedagogia faz a Avaliação Teórica pela <b>PND</b> (Prova Nacional Docente). A prova de 2026 foi aplicada em 20/09; os cadernos e gabaritos são divulgados pelo Inep conforme o cronograma (ver aba Prazos).</p>'+
+    h+='<p class="note">A Pedagogia faz a Avaliação Teórica pela <b>PND</b> (Prova Nacional Docente), <b>todo ano</b>. A prova de 2026 foi aplicada em 20/09; os cadernos e gabaritos são divulgados pelo Inep conforme o cronograma (ver aba Prazos).</p>'+
        '<div class="pg-links"><a href="'+PND+'" target="_blank" rel="noopener">Página da PND (INEP)</a> · <a href="'+MOD+'" target="_blank" rel="noopener">Enade das Licenciaturas</a></div>';
   } else {
     if(!c.wait) h+='<p class="note">A prova de '+esc(c.nome)+' de '+esc(String(c.ano||''))+' será aplicada conforme o cronograma (ver aba Prazos); os cadernos e gabaritos saem no Portal do Inep logo após a prova.</p>';
