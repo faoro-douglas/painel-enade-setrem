@@ -296,6 +296,13 @@
   .mg-d{border-left-color:var(--st-urgent)}
   .mg-sub{color:var(--muted)}
   .mg-howto{margin-top:10px;padding:10px 12px;background:var(--surface2);border-left:3px solid var(--teal);border-radius:8px;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .pg-card{padding:16px}
+  .pg-ed-top{font-size:16px}
+  .pg-mod{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--teal);background:var(--st-now-bg);padding:2px 8px;border-radius:6px;margin-left:8px;vertical-align:middle}
+  .pg-how{font-size:14px;color:var(--ink);margin:8px 0 14px;line-height:1.55}
+  .pg-btn{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:14px;padding:10px 16px;border-radius:8px;text-decoration:none}
+  .pg-links{margin:8px 0 0;font-size:13px}
+  .pg-links a{color:var(--teal)}
   @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}.nt-tbl{font-size:12px}.nt-tbl th,.nt-tbl td{padding:5px 7px}}
 </style>
 
@@ -647,7 +654,7 @@ var RESULTADOS={"adm": {"historico": [{"ano": 2022, "conceito": 4, "continuo": "
 
 /* abas — "Procuradoria" só entra quando destravada (código) */
 function tabList(){
-  var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['nota','Nota e Conceito'],['editais','Editais']];
+  var t=[['cal','Calendário'],['prazos','Prazos'],['conteudo','O que cai na prova'],['pg','Provas e gabaritos'],['nota','Nota e Conceito'],['editais','Editais']];
   if(isPI) t.push(['pi','Procuradoria']);
   t.push(['coord','Coordenador'],['estud','Estudante'],['novi','Novidades'],['leg','Legislação'],['eads','EADs'],['links','Links oficiais']);
   return t;
@@ -778,6 +785,35 @@ function eadsTab(){
     '<p class="note">Cursos a distância e semipresenciais da SETREM. No e-MEC, ainda não têm Conceito Enade nem CPC; o indicador registrado é o <b>CC — Conceito de Curso</b>. <span class="ato">e-MEC — consulta da IES (28/10/2026)</span></p>'+
     '<div class="card" style="padding:8px 10px"><table class="nt-tbl"><thead><tr><th>Curso</th><th>Cód. e-MEC</th><th>CC</th><th>Observação</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<p class="note">O CC vem da avaliação externa in loco (visita). A explicação “o que é o CC” está na aba Nota e Conceito.</p>';
+}
+function renderProvas(){
+  var c=DATA[curCourse], cx=c.nome+' · '+c.grau+(c.ano?(' · '+c.ano):'');
+  var lic=/licenc/i.test(c.grau);
+  var rr=(typeof RESULTADOS!=='undefined'&&RESULTADOS[curCourse])||null;
+  var rec=rr&&rr.historico&&rr.historico.length?rr.historico[0]:null;
+  var ultimo=rec?rec.ano:null;
+  var PROVAS='https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade/provas-e-gabaritos';
+  var MOD=lic?'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-das-licenciaturas':'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enade-bacharelado-e-superiores-de-tecnologia';
+  var PND='https://www.gov.br/inep/pt-br/centrais-de-conteudo/legislacao/prova-nacional-docente';
+  var h='<div class="panel-head"><h2>Provas e gabaritos</h2><span class="cx">'+esc(cx)+'</span></div>';
+  h+='<div class="card pg-card">';
+  if(ultimo){
+    h+='<div class="pg-ed-top"><b>Última avaliação: '+esc(String(ultimo))+'</b><span class="pg-mod">'+(lic?'Licenciatura':'Bacharelado')+'</span></div>'+
+       '<p class="pg-how">A prova e o gabarito ficam na página oficial do INEP. Lá, selecione o ano <b>'+esc(String(ultimo))+'</b> e procure por <b>'+esc(c.nome)+'</b>.</p>';
+  } else {
+    h+='<p class="pg-how">As provas e os gabaritos de todas as edições ficam na página oficial do INEP, organizados por ano.</p>';
+  }
+  h+='<a class="pg-btn" href="'+PROVAS+'" target="_blank" rel="noopener">Abrir provas e gabaritos (INEP) ›</a>';
+  h+='</div>';
+  if(lic){
+    h+='<p class="note">A Pedagogia faz a Avaliação Teórica pela <b>PND</b> (Prova Nacional Docente). A prova de 2026 foi aplicada em 20/09; os cadernos e gabaritos são divulgados pelo Inep conforme o cronograma (ver aba Prazos).</p>'+
+       '<div class="pg-links"><a href="'+PND+'" target="_blank" rel="noopener">Página da PND (INEP)</a> · <a href="'+MOD+'" target="_blank" rel="noopener">Enade das Licenciaturas</a></div>';
+  } else {
+    if(!c.wait) h+='<p class="note">A prova de '+esc(c.nome)+' de '+esc(String(c.ano||''))+' será aplicada conforme o cronograma (ver aba Prazos); os cadernos e gabaritos saem no Portal do Inep logo após a prova.</p>';
+    h+='<div class="pg-links"><a href="'+MOD+'" target="_blank" rel="noopener">Enade — Bacharelados e Superiores de Tecnologia</a></div>';
+  }
+  h+='<p class="note">Para edições anteriores, é só trocar o ano na mesma página do INEP. Links oficiais conferidos em 30/10/2026.</p>';
+  return h;
 }
 function margensPI(){
   var ordem=['adm','dir','psi','agro','enf','comp','ped'], rows='';
@@ -985,6 +1021,8 @@ function renderMain(){
       '<div class="card">'+bl+'</div>'+
       '<p class="note">Clique em um componente para ver, na tela, o perfil, as competências com suas habilidades e os objetos de conhecimento — conteúdo reproduzido exatamente conforme a portaria oficial.</p>';
     }
+  } else if(curTab==='pg'){
+    h=renderProvas();
   } else if(curTab==='editais'){
     var eds=EDITAIS[curCourse]||[];
     if(!eds.length){ h='<div class="panel-head"><h2>Editais</h2><span class="cx">'+esc(cx)+'</span></div>'+waitBox('O edital do ENADE/PND da próxima avaliação de '+c.nome+' ainda não foi publicado. Aparecerá aqui, com resumo e link oficial do DOU, quando sair.'); }
