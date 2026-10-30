@@ -295,6 +295,7 @@
   .mg-u{border-left-color:var(--green)}
   .mg-d{border-left-color:var(--st-urgent)}
   .mg-sub{color:var(--muted)}
+  .mg-howto{margin-top:10px;padding:10px 12px;background:var(--surface2);border-left:3px solid var(--teal);border-radius:8px;font-size:12.5px;color:var(--muted);line-height:1.5}
   @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}.nt-tbl{font-size:12px}.nt-tbl th,.nt-tbl td{padding:5px 7px}}
 </style>
 
@@ -755,11 +756,13 @@ function margemTbl(mg,lic,rec){
     if(mg.subir && mg.subir.alunos!=null) h+='<div class="mg-row mg-u"><span class="mg-lab">Para melhorar</span>subir ao conceito '+esc(String(mg.subir.para))+': '+esc(String(mg.subir.alunos))+' concluinte(s) a mais no Básico ou acima</div>';
     else if(parseInt(rec.conceito,10)>=5) h+='<div class="mg-row mg-u"><span class="mg-lab">Para melhorar</span>já é o conceito máximo (5)</div>';
     if(mg.cair && mg.cair.alunos!=null) h+='<div class="mg-row mg-d"><span class="mg-lab">Para piorar</span>cair ao conceito '+esc(String(mg.cair.para))+': bastaria <b>'+esc(String(mg.cair.alunos))+'</b> concluinte(s) a menos no Básico ou acima</div>';
+    h+='<div class="mg-howto"><b>Como funciona:</b> na licenciatura o conceito é a <b>proporção de concluintes que atingem pelo menos o nível Básico</b> na prova (PND), encaixada numa faixa — 90% ou mais = conceito 5; 75% a 90% = 4; 60% a 75% = 3; 40% a 60% = 2; abaixo de 40% = 1. Como a turma é pequena, <b>cada concluinte pesa muito</b>: por isso um único concluinte abaixo do Básico já pode mudar a faixa.</div>';
   } else {
     var nota=(Math.round(parseFloat(String(rec.continuo).replace(',','.'))*1000)/1000).toFixed(3).replace('.',',');
     h+='<div class="mg-est"><span class="mg-lab">Estado atual</span>nossa nota <b class="tnum">'+nota+'</b> · conceito '+esc(String(rec.conceito))+'</div>';
     if(mg.subir) h+='<div class="mg-row mg-u"><span class="mg-lab">Para melhorar</span>subir ao conceito '+esc(String(mg.subir.para))+': faltam <b>'+esc(String(mg.subir.nota))+'</b> na nota <span class="mg-sub">(chegar a '+(CUT[mg.subir.para]||'')+')</span></div>';
     if(mg.cair) h+='<div class="mg-row mg-d"><span class="mg-lab">Para piorar</span>cair ao conceito '+esc(String(mg.cair.para))+': folga de <b>'+esc(String(mg.cair.nota))+'</b> na nota <span class="mg-sub">(cair abaixo de '+(CUT[parseInt(rec.conceito,10)]||'')+')</span></div>';
+    h+='<div class="mg-howto"><b>Como funciona:</b> no bacharelado o conceito vem da <b>nota contínua do Enade</b> (escala 0 a 5), e cada faixa tem um corte: conceito 3 começa em 1,945; 4 em 2,945; 5 em 3,945. "Faltam" é quanto a nota precisa subir para a faixa de cima; "folga" é a distância até cair para a de baixo.</div>';
   }
   h+='<p class="nt-obs">Números reais, dos resultados oficiais do Inep.</p>';
   return h;
