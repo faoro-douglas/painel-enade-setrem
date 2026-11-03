@@ -303,6 +303,10 @@
   .pg-btn{display:inline-block;background:var(--accent);color:#fff;font-weight:600;font-size:14px;padding:10px 16px;border-radius:8px;text-decoration:none}
   .pg-links{margin:8px 0 0;font-size:13px}
   .pg-links a{color:var(--teal)}
+  .hab-box{margin-top:12px;padding:12px 14px;background:var(--st-now-bg);border:1px solid var(--teal);border-radius:10px}
+  .hab-t{font-weight:700;color:var(--teal);font-size:14px;margin-bottom:6px}
+  .hab-i{font-size:13.5px;color:var(--ink);line-height:1.5;margin:4px 0}
+  .hab-fonte{font-size:11.5px;color:var(--muted);margin-top:6px}
   @media (max-width:560px){.lei-item{grid-template-columns:1fr auto}.lei-d{grid-column:1/-1}.nt-tbl{font-size:12px}.nt-tbl th,.nt-tbl td{padding:5px 7px}}
 </style>
 
@@ -1012,6 +1016,10 @@ function renderMain(){
     var ativos=pzAber.concat(pzVir).map(prazoRow).join('');
     var fechados=pzEnc.map(prazoRow).join('');
     h='<div class="panel-head"><h2>Prazos e cronograma</h2><span class="cx">'+esc(cx)+'</span></div>'+
+      '<div class="hab-box"><div class="hab-t">Quem é habilitado — quem participa do Enade</div>'+
+      '<div class="hab-i"><b>Ingressante:</b> iniciou o curso em 2026, está matriculado e integralizou de 0% a 25% da carga horária. Preenche só o <b>Questionário do Ingressante</b> e é dispensado da prova.</div>'+
+      '<div class="hab-i"><b>Concluinte:</b> previsão de integralizar <b>80% ou mais</b> da carga horária e sem previsão de colar grau até 31/08/2026; ou previsão de integralizar 100% até julho de 2027. <b>Faz a prova.</b></div>'+
+      '<div class="hab-fonte">Edital 49/2026, item 3.1.1. (Curso superior de tecnologia: concluinte é 75%, ou 100% até dez/2026.)</div></div>'+
       '<div class="legend"><span><i style="background:var(--st-urgent)"></i>urgente / em breve</span>'+
       '<span><i style="background:var(--st-now)"></i>aberto</span>'+
       '<span><i style="background:var(--st-soon)"></i>a vir</span>'+
